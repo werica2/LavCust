@@ -1,0 +1,48 @@
+@startuml Modelo_DER
+
+' Configurações visuais do diagrama
+hide circle
+skinparam linetype ortho
+
+' Definition das Entidades
+entity "CLIENTE" as cliente {
+  * id_cliente : INT <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * email : VARCHAR(100)
+  * cpf : VARCHAR(14)
+    telefone : VARCHAR(20)
+}
+
+entity "PEDIDO" as pedido {
+  * id_pedido : INT <<PK>>
+  --
+  * id_cliente : INT <<FK>>
+  * data_criacao : DATETIME
+  * status : VARCHAR(30)
+  * valor_total : DECIMAL(10,2)
+}
+
+entity "ITEM_PEDIDO" as item {
+  * id_item : INT <<PK>>
+  --
+  * id_pedido : INT <<FK>>
+  * id_produto : INT <<FK>>
+  * quantidade : INT
+  * preco_unitario : DECIMAL(10,2)
+}
+
+entity "PRODUTO" as produto {
+  * id_produto : INT <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * preco : DECIMAL(10,2)
+    estoque : INT
+}
+
+' Relacionamentos e Cardinalidades (Crow's Foot)
+cliente ||--o{ pedido : "realiza"
+pedido ||--|{ item : "possui"
+produto ||--o{ item : "está presente em"
+
+@enduml
