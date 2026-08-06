@@ -8,3 +8,39 @@ Werica Paula
 Nicoly Lopes
 Beatryz dos Santos
 Maria Eduarda Afonso
+
+---
+
+# 🏗️ Arquitetura do Sistema
+
+Os diagramas abaixo representam a arquitetura e a estrutura técnica do projeto LavCust.
+
+## Diagrama de Contexto (C4 - Nível 1)
+
+**Responsável:** Werica
+
+![Diagrama de Contexto](contexto.png)
+
+---
+
+## Diagrama de Contêiner (C4 - Nível 2)
+
+**Responsável:** Beatryz
+
+![Diagrama de Contêiner](container.png)
+
+---
+
+## Modelo de Banco de Dados (DER)
+
+**Responsável:** Duda
+
+![Modelo de Banco de Dados](banco.png)
+
+---
+
+## Fluxograma do Processo
+
+**Responsável:** Nicoly
+
+![Fluxograma](fluxograma.png)
