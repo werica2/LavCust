@@ -1,16 +1,30 @@
 @startuml
-title Diagrama de Contexto - LavCust
+title Diagrama de Contêiner - LavCust
 
-actor "Produtor Rural" as Produtor
-actor "Administrador da Fazenda" as Admin
+left to right direction
 
-rectangle "LavCust\nSistema de Controle de Custos\nProdução de Lavoura" as Sistema
+actor "Produtor Rural" as Usuario
 
-database "Banco de Dados" as BD
+rectangle "Navegador Web\n(Chrome, Edge, Firefox)" as Browser
 
-Produtor --> Sistema : Cadastra despesas\nConsulta custos\nVisualiza relatórios
-Admin --> Sistema : Gerencia usuários\nConsulta relatórios\nControla despesas
+rectangle "Interface Web\n(HTML/CSS)" as Frontend
 
-Sistema --> BD : Armazena e consulta dados
+rectangle "Backend\n(Python + Flask)" as Backend
+
+database "Banco de Dados\n(SQLite)" as BD
+
+Usuario --> Browser : Acessa o sistema
+
+Browser --> Frontend : Exibe as páginas
+
+Frontend --> Backend : Envia requisições
+
+Backend --> BD : Salva e consulta dados
+
+BD --> Backend : Retorna informações
+
+Backend --> Frontend : Exibe resultados
+
+Frontend --> Browser : Mostra informações
 
 @enduml
