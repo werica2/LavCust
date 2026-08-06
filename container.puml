@@ -1,1 +1,31 @@
 
+@startuml
+title Diagrama de Contêiner - LavCust
+
+left to right direction
+
+actor "Produtor Rural" as Usuario
+
+rectangle "Navegador Web" as Browser
+
+rectangle "Interface Web\nHTML/CSS" as Frontend
+
+rectangle "Backend\nPython + Flask" as Backend
+
+database "Banco de Dados\nSQLite" as Database
+
+Usuario --> Browser : Acessa o sistema
+
+Browser --> Frontend : Exibe as telas
+
+Frontend --> Backend : Envia solicitações
+
+Backend --> Database : Salva e consulta dados
+
+Database --> Backend : Retorna informações
+
+Backend --> Frontend : Envia resultados
+
+Frontend --> Browser : Exibe informações
+
+@enduml
