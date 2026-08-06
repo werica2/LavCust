@@ -1,30 +1,17 @@
-@startuml
-title Diagrama de Contêiner - LavCust
+@startuml contexto
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-left to right direction
+TITLE Diagrama de Contexto - Sistema LavCust (C4 Nível 1)
 
-actor "Produtor Rural" as Usuario
+Person(produtor, "Produtor Rural", "Acompanha relatórios financeiros e custos de produção.")
+Person(admin, "Administrador da Fazenda", "Gerencia dados operacionais, insumos e lançamentos de custos.")
 
-rectangle "Navegador Web\n(Chrome, Edge, Firefox)" as Browser
+System(lavcust, "Sistema LavCust", "Sistema de gestão e apuração de custos operacionais da lavoura.")
 
-rectangle "Interface Web\n(HTML/CSS)" as Frontend
+SystemDb(bd, "Banco de Dados", "Armazena informações sobre a fazenda, usuários e custos.")
 
-rectangle "Backend\n(Python + Flask)" as Backend
-
-database "Banco de Dados\n(SQLite)" as BD
-
-Usuario --> Browser : Acessa o sistema
-
-Browser --> Frontend : Exibe as páginas
-
-Frontend --> Backend : Envia requisições
-
-Backend --> BD : Salva e consulta dados
-
-BD --> Backend : Retorna informações
-
-Backend --> Frontend : Exibe resultados
-
-Frontend --> Browser : Mostra informações
+Rel(produtor, lavcust, "Consulta relatórios e indicadores", "HTTPS / Web")
+Rel(admin, lavcust, "Cadastra dados, insumos e despesas", "HTTPS / Web")
+Rel(lavcust, bd, "Lê e grava informações", "SQL / TCP")
 
 @enduml
