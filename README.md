@@ -1,7 +1,7 @@
-# Projeto Software Agro - Custo de Produção de Lavoura (Soja ou Milho)
+LavCust
 
-*Resumo
-O projeto tem como objetivo desenvolver um sistema para auxiliar agricultores no controle dos custos de produção de lavouras de soja e milho. A plataforma permitirá cadastrar gastos com sementes, fertilizantes, defensivos, mão de obra e outros insumos, além de gerar relatórios dos custos e estimar o lucro ou prejuízo da produção com base no preço de venda da saca. Dessa forma, o sistema busca facilitar a organização financeira, melhorar o planejamento da safra e apoiar a tomada de decisões no agronegócio.
+O LavCust é um sistema desenvolvido para auxiliar agricultores e produtores rurais no controle dos custos de produção de lavouras de soja e milho. A plataforma permitirá o cadastro de despesas, como sementes, fertilizantes, defensivos, combustível, mão de obra e outros insumos, além de gerar relatórios por safra.
+O sistema também possibilitará a estimativa do lucro ou prejuízo da produção com base nos custos registrados e no preço de venda da saca. Dessa forma, o LavCust busca substituir o controle manual realizado em cadernos e planilhas, proporcionando maior organização financeira, agilidade no acompanhamento dos custos e apoio à tomada de decisões.
 
 *Integrantes:
 Werica Paula
