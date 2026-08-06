@@ -1,0 +1,16 @@
+@startuml
+title Diagrama de Contexto - LavCust
+
+actor "Produtor Rural" as Produtor
+actor "Administrador da Fazenda" as Admin
+
+rectangle "LavCust\nSistema de Controle de Custos\nProdução de Lavoura" as Sistema
+
+database "Banco de Dados" as BD
+
+Produtor --> Sistema : Cadastra despesas\nConsulta custos\nVisualiza relatórios
+Admin --> Sistema : Gerencia usuários\nConsulta relatórios\nControla despesas
+
+Sistema --> BD : Armazena e consulta dados
+
+@enduml
