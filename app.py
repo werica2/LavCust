@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
@@ -22,9 +22,36 @@ despesas = [
 ]
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def inicio():
-    return render_template("despesas.html", despesas=despesas)
+
+    if request.method == "POST":
+
+        descricao = request.form.get("descricao")
+        categoria = request.form.get("categoria")
+        valor = request.form.get("valor")
+        data = request.form.get("data")
+        safra = request.form.get("safra")
+
+        valor = valor.replace(".", "").replace(",", ".")
+
+        nova_despesa = {
+            "id": len(despesas) + 1,
+            "descricao": descricao,
+            "categoria": categoria,
+            "valor": float(valor),
+            "data": data,
+            "safra": safra
+        }
+
+        despesas.append(nova_despesa)
+
+        return redirect("/")
+
+    return render_template(
+        "cadastro.html",
+        despesas=despesas
+    )
 
 
 if __name__ == "__main__":

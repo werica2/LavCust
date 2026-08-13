@@ -1,143 +1,678 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
-<style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-    }
-
-    body {
-        background: #f1f8f4;
-        color: #26352c;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: first baseline;
-        padding: 30px;
-    }
-
-    .container {
-        background: white;
-        width: 100%;
-        max-width: 600px;
-        padding: 35px;
-        border-radius: 18px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    }
-
-    h1 {
-        color: #218c5a;
-        margin-bottom: 10px;
-        text-align: normal;
-    }
-
-    p {
-        text-align: center;
-        color: #6b756f;
-        margin-bottom: 25px;
-    }
-
-    form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    label {
-        font-weight: 700;
-        color: #34443a;
-    }
-
-    input,
-    select,
-    textarea {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #cfd8d2;
-        border-radius: 8px;
-        font-size: 15px;
-        margin-top: 6px;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-        outline: none;
-        border-color: #218c5a;
-        box-shadow: 0 0 0 3px rgba(33, 140, 90, 0.12);
-    }
-
-    button {
-        background: #218c5a;
-        color: white;
-        border: none;
-        padding: 13px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
-    button:hover {
-        background: #176b43;
-    }
-</style>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>LavCust - Cadastro de Despesa</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #eaf7ef, #f7fbf8);
+            color: #26352c;
+        }
+
+        /* CABEÇALHO */
+        header {
+            background: #176b43;
+            color: white;
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #a7e8c5;
+        }
+
+        .subtitulo-header {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ÁREA PRINCIPAL */
+        main {
+            width: 100%;
+            max-width: 850px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .titulo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .titulo h1 {
+            color: #176b43;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .titulo p {
+            color: #68756d;
+            font-size: 16px;
+        }
+
+        /* CARD DO FORMULÁRIO */
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #218c5a;
+        }
+
+        .card h2 {
+            color: #176b43;
+            font-size: 21px;
+            margin-bottom: 25px;
+        }
+
+        /* CAMPOS */
+        .linha {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #34443a;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cfd8d2;
+            border-radius: 9px;
+            background: #fbfdfb;
+            color: #26352c;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #218c5a;
+            box-shadow: 0 0 0 3px rgba(33, 140, 90, 0.12);
+            background: white;
+        }
+
+        /* =========================
+           CAMPO DE VALOR
+           ========================= */
+
+        .valor-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 48px;
+
+            border: 1px solid #cfd8d2;
+            border-radius: 9px;
+
+            background: #fbfdfb;
+            overflow: hidden;
+
+            transition: 0.2s;
+        }
+
+        .valor-container:focus-within {
+            border-color: #218c5a;
+
+            box-shadow:
+                0 0 0 3px rgba(33, 140, 90, 0.12);
+
+            background: white;
+        }
+
+        /* R$ FIXO */
+        .moeda {
+            padding-left: 14px;
+
+            color: #176b43;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            user-select: none;
+        }
+
+        /* NÚMERO DO VALOR */
+        .valor-container input {
+            flex: 1;
+
+            width: 100%;
+            height: 100%;
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            padding: 0 14px 0 8px;
+            margin: 0;
+
+            font-size: 16px;
+            font-weight: 500;
+
+            color: #26352c;
+        }
+
+        .valor-container input:focus {
+            border: none;
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* BOTÃO */
+        .botao {
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: #218c5a;
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .botao:hover {
+            background: #176b43;
+            transform: translateY(-1px);
+        }
+
+        /* RODAPÉ */
+        footer {
+            text-align: center;
+            color: #7b887f;
+            font-size: 13px;
+            padding: 20px;
+        }
+
+        /* CELULAR */
+        @media (max-width: 650px) {
+
+            header {
+                padding: 18px 25px;
+            }
+
+            .subtitulo-header {
+                display: none;
+            }
+
+            .titulo h1 {
+                font-size: 27px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .linha {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <h1>Cadastro de Despesa</h1>
+    <!-- CABEÇALHO -->
+    <header>
 
-    <form>
-        <label for="descricao">Descrição da despesa:</label>
-        <input type="text" id="descricao" name="descricao" required>
+        <div class="logo">
+            Lav<span>Cust</span>
+        </div>
 
-        <br><br>
+        <div class="subtitulo-header">
+            Controle de despesas agrícolas
+        </div>
 
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" name="categoria" required>
-            <option value="">Selecione</option>
-            <option value="sementes">Sementes</option>
-            <option value="fertilizantes">Fertilizantes</option>
-            <option value="defensivos">Defensivos agrícolas</option>
-            <option value="combustivel">Combustível</option>
-            <option value="manutencao">Manutenção</option>
-            <option value="mao_de_obra">Mão de obra</option>
-            <option value="transporte">Transporte</option>
-            <option value="outros">Outros</option>
-        </select>
+    </header>
 
-        <br><br>
 
-        <label for="valor">Valor:</label>
-        <input type="number" id="valor" name="valor" step="0.01" required>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
 
-        <br><br>
+        <section class="titulo">
 
-        <label for="data">Data:</label>
-        <input type="date" id="data" name="data" required>
+            <h1>
+                Cadastro de Despesa
+            </h1>
 
-        <br><br>
+            <p>
+                Registre uma nova despesa para manter seus custos organizados.
+            </p>
 
-        <label for="safra">Safra:</label>
-        <select id="safra" name="safra" required>
-            <option value="">Selecione</option>
-            <option value="Soja 2026">Soja 2026</option>
-            <option value="Milho 2026">Milho 2026</option>
-        </select>
+        </section>
 
-        <br><br>
 
-        <button type="submit">Cadastrar despesa</button>
-    </form>
+        <!-- CARD -->
+        <section class="card">
+
+            <h2>
+                Nova despesa
+            </h2>
+
+
+            <form method="POST" action="/">
+
+                <!-- DESCRIÇÃO -->
+                <div class="campo">
+
+                    <label for="descricao">
+                        Descrição da despesa
+                    </label>
+
+                    <input
+                        type="text"
+                        id="descricao"
+                        name="descricao"
+                        placeholder="Ex.: Compra de fertilizantes"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CATEGORIA + VALOR -->
+                <div class="linha">
+
+                    <!-- CATEGORIA -->
+                    <div class="campo">
+
+                        <label for="categoria">
+                            Categoria
+                        </label>
+
+                        <select
+                            id="categoria"
+                            name="categoria"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione uma categoria
+                            </option>
+
+                            <option value="sementes">
+                                Sementes
+                            </option>
+
+                            <option value="fertilizantes">
+                                Fertilizantes
+                            </option>
+
+                            <option value="defensivos">
+                                Defensivos agrícolas
+                            </option>
+
+                            <option value="combustivel">
+                                Combustível
+                            </option>
+
+                            <option value="manutencao">
+                                Manutenção
+                            </option>
+
+                            <option value="mao_de_obra">
+                                Mão de obra
+                            </option>
+
+                            <option value="transporte">
+                                Transporte
+                            </option>
+
+                            <option value="outros">
+                                Outros
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- VALOR -->
+                    <div class="campo">
+
+                        <label for="valor">
+                            Valor
+                        </label>
+
+                        <div class="valor-container">
+
+                            <span class="moeda">
+                                R$
+                            </span>
+
+                            <input
+                                type="text"
+                                id="valor"
+                                name="valor"
+                                value="0,00"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                readonly
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DATA + SAFRA -->
+                <div class="linha">
+
+                    <!-- DATA -->
+                    <div class="campo">
+
+                        <label for="data">
+                            Data da despesa
+                        </label>
+
+                        <input
+                            type="date"
+                            id="data"
+                            name="data"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- SAFRA -->
+                    <div class="campo">
+
+                        <label for="safra">
+                            Safra
+                        </label>
+
+                        <select
+                            id="safra"
+                            name="safra"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione uma safra
+                            </option>
+
+                            <option value="Soja 2026">
+                                Soja 2026
+                            </option>
+
+                            <option value="Milho 2026">
+                                Milho 2026
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BOTÃO -->
+                <button
+                    type="submit"
+                    class="botao"
+                >
+                    Cadastrar despesa
+                </button>
+
+            </form>
+
+            <hr style="margin: 35px 0; border: 0; border-top: 1px solid #e0e8e3;">
+
+<h2>Despesas cadastradas</h2>
+
+{% if despesas %}
+
+    {% for despesa in despesas %}
+
+        <div style="
+            background: #f7fbf8;
+            border: 1px solid #dce8e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        ">
+
+            <strong>
+                {{ despesa.descricao }}
+            </strong>
+
+            <p style="margin-top: 6px; color: #68756d;">
+                Categoria: {{ despesa.categoria }} |
+                Valor: R$ {{ "%.2f"|format(despesa.valor) }} |
+                Data: {{ despesa.data }} |
+                Safra: {{ despesa.safra }}
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>Nenhuma despesa cadastrada.</p>
+
+{% endif %}
+
+        </section>
+
+    </main>
+
+
+    <!-- RODAPÉ -->
+    <footer>
+
+        LavCust © 2026 — Sistema de controle de despesas
+
+    </footer>
+
+
+    <!-- =========================
+         JAVASCRIPT DO VALOR
+         ========================= -->
+
+    <script>
+
+        const campoValor =
+            document.getElementById("valor");
+
+
+        /*
+         * Guarda o valor em CENTAVOS.
+         *
+         * Exemplo:
+         *
+         * 0     = R$ 0,00
+         * 1     = R$ 0,01
+         * 12    = R$ 0,12
+         * 125   = R$ 1,25
+         * 1250  = R$ 12,50
+         */
+        let valorCentavos = 0;
+
+
+        /*
+         * Atualiza o que aparece na tela.
+         */
+        function atualizarValor() {
+
+            const reais =
+                Math.floor(valorCentavos / 100);
+
+            const centavos =
+                valorCentavos % 100;
+
+
+            campoValor.value =
+                reais.toLocaleString("pt-BR")
+                + ","
+                + centavos
+                    .toString()
+                    .padStart(2, "0");
+        }
+
+
+        /*
+         * Detecta o que a pessoa digitou.
+         */
+        campoValor.addEventListener(
+            "keydown",
+            function(event) {
+
+
+                /* =====================
+                   DIGITOU UM NÚMERO
+                   ===================== */
+
+                if (
+                    event.key >= "0" &&
+                    event.key <= "9"
+                ) {
+
+                    event.preventDefault();
+
+
+                    const numero =
+                        Number(event.key);
+
+
+                    /*
+                     * Empurra os números
+                     * para a esquerda.
+                     */
+                    valorCentavos =
+                        valorCentavos * 10
+                        + numero;
+
+
+                    /*
+                     * Limite máximo.
+                     */
+                    if (
+                        valorCentavos >
+                        999999999999
+                    ) {
+
+                        valorCentavos =
+                            999999999999;
+
+                    }
+
+
+                    atualizarValor();
+
+                }
+
+
+                /* =====================
+                   BACKSPACE
+                   ===================== */
+
+                else if (
+                    event.key === "Backspace"
+                ) {
+
+                    event.preventDefault();
+
+
+                    valorCentavos =
+                        Math.floor(
+                            valorCentavos / 10
+                        );
+
+
+                    atualizarValor();
+
+                }
+
+
+                /* =====================
+                   DELETE
+                   ===================== */
+
+                else if (
+                    event.key === "Delete"
+                ) {
+
+                    event.preventDefault();
+
+
+                    valorCentavos = 0;
+
+
+                    atualizarValor();
+
+                }
+
+
+                /* =====================
+                   OUTRAS TECLAS
+                   ===================== */
+
+                else if (
+
+                    event.key !== "Tab" &&
+                    event.key !== "Shift" &&
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight"
+
+                ) {
+
+                    event.preventDefault();
+
+                }
+
+            }
+        );
+
+
+        atualizarValor();
+
+    </script>
 
 </body>
+
 </html>
