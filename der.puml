@@ -5,44 +5,44 @@ hide circle
 skinparam linetype ortho
 
 ' Definition das Entidades
-entity "CLIENTE" as cliente {
+entity "USUARIO" as usuario{
   * id_cliente : INT <<PK>>
   --
   * nome : VARCHAR(100)
   * email : VARCHAR(100)
-  * cpf : VARCHAR(14)
-    telefone : VARCHAR(20)
+  * senha : VARCHAR(95)
 }
 
-entity "PEDIDO" as pedido {
+entity "SAFRA" as safra {
   * id_pedido : INT <<PK>>
   --
-  * id_cliente : INT <<FK>>
-  * data_criacao : DATETIME
-  * status : VARCHAR(30)
-  * valor_total : DECIMAL(10,2)
+  * id_usuario : INT <<FK>>
+  * nome : VARCHAR(100)
+  * ano : INT
+ 
 }
 
-entity "ITEM_PEDIDO" as item {
+entity "CATEGORIA_DESPESA" as categoria{
   * id_item : INT <<PK>>
   --
-  * id_pedido : INT <<FK>>
-  * id_produto : INT <<FK>>
-  * quantidade : INT
-  * preco_unitario : DECIMAL(10,2)
+  * nome : VARCHAR(100)
+  * descricao : VARCHAR(255)
 }
 
-entity "PRODUTO" as produto {
-  * id_produto : INT <<PK>>
+entity "DESPESA" as despesa{
+  * id_despesa : INT <<PK>>
   --
-  * nome : VARCHAR(100)
-  * preco : DECIMAL(10,2)
-    estoque : INT
+  * id_safra : INT <<FK>>
+  * id_categoria : INT <<FK>>
+  * descricao : VARCHAR(255)
+  * valor : DECIMAL(10,2)
+  * data_despesa : DATE
+  
 }
 
 ' Relacionamentos e Cardinalidades (Crow's Foot)
-cliente ||--o{ pedido : "realiza"
-pedido ||--|{ item : "possui"
-produto ||--o{ item : "está presente em"
+usuario ||--o{ safra: "possui"
+safra ||--|{ despesa: "registra"
+categoria ||--o{ despesa : "classifica"
 
 @enduml
