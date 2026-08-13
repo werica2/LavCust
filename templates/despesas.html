@@ -300,6 +300,11 @@
                     <td>{{ despesa.safra }}</td>
                     <td>
     <a href="/editar/{{ despesa.id }}">✏️ Editar</a>
+    |
+    <a href="/excluir/{{ despesa.id }}"
+       onclick="return confirm('Tem certeza que deseja excluir esta despesa?')">
+        🗑️ Excluir
+    </a>
 </td>
 
                 </tr>

@@ -168,6 +168,16 @@ def editar_despesa(id):
         despesa=despesa
     )
 
+@app.route("/excluir/<int:id>")
+def excluir_despesa(id):
+    despesa = next(
+        (d for d in despesas if d["id"] == id),
+        None
+    )
 
+    if despesa is not None:
+        despesas.remove(despesa)
+
+    return redirect(url_for("listar_despesas"))
 if __name__ == "__main__":
     app.run(debug=True)
