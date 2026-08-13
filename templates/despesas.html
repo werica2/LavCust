@@ -277,6 +277,7 @@
                     <th>Valor</th>
                     <th>Data</th>
                     <th>Safra</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
 
@@ -297,6 +298,9 @@
                     <td>{{ despesa.data }}</td>
 
                     <td>{{ despesa.safra }}</td>
+                    <td>
+    <a href="/editar/{{ despesa.id }}">✏️ Editar</a>
+</td>
 
                 </tr>
 

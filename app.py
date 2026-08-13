@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -102,7 +102,6 @@ despesas = [
 ]
 
 
-
 @app.route("/", methods=["GET", "POST"])
 def inicio():
     if request.method == "POST":
@@ -110,11 +109,7 @@ def inicio():
         senha = request.form["senha"]
 
         if usuario == "admin" and senha == "1234":
-            return render_template(
-                "despesas.html",
-                despesas=despesas,
-                pesquisa=""
-            )
+            return redirect(url_for("listar_despesas"))
 
         return render_template(
             "login.html",
@@ -131,13 +126,46 @@ def listar_despesas():
     despesas_filtradas = []
 
     for despesa in despesas:
-        if pesquisa.lower() in despesa["descricao"].lower():
+        texto = (
+            despesa["descricao"]
+            + " "
+            + despesa["categoria"]
+            + " "
+            + despesa["safra"]
+        )
+
+        if pesquisa.lower() in texto.lower():
             despesas_filtradas.append(despesa)
 
     return render_template(
         "despesas.html",
         despesas=despesas_filtradas,
         pesquisa=pesquisa
+    )
+
+
+@app.route("/editar/<int:id>", methods=["GET", "POST"])
+def editar_despesa(id):
+    despesa = next(
+        (d for d in despesas if d["id"] == id),
+        None
+    )
+
+    if despesa is None:
+        return "Despesa não encontrada!"
+
+    if request.method == "POST":
+        despesa["descricao"] = request.form["descricao"]
+        despesa["categoria"] = request.form["categoria"]
+        despesa["valor"] = float(request.form["valor"])
+        despesa["data"] = request.form["data"]
+        despesa["safra"] = request.form["safra"]
+
+        return redirect(url_for("listar_despesas"))
+
+    return render_template(
+        "editar.html",
+        despesa=despesa
     )
 
 
