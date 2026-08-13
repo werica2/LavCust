@@ -24,8 +24,19 @@ despesas = [
 
 @app.route("/")
 def inicio():
-    return render_template("despesas.html", despesas=despesas)
+    pesquisa = request.args.get("pesquisa", "")
 
+    despesas_filtradas = []
+
+    for despesa in despesas:
+        if pesquisa.lower() in despesa["descricao"].lower():
+            despesas_filtradas.append(despesa)
+
+    return render_template(
+        "despesas.html",
+        despesas=despesas_filtradas,
+        pesquisa=pesquisa
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
