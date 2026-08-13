@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LavCust - Cadastro de Despesa</title>
+</head>
+<body>
+
+    <h1>Cadastro de Despesa</h1>
+
+    <form>
+        <label for="descricao">Descrição da despesa:</label>
+        <input type="text" id="descricao" name="descricao" required>
+
+        <br><br>
+
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" name="categoria" required>
+            <option value="">Selecione</option>
+            <option value="sementes">Sementes</option>
+            <option value="fertilizantes">Fertilizantes</option>
+            <option value="defensivos">Defensivos agrícolas</option>
+            <option value="combustivel">Combustível</option>
+            <option value="manutencao">Manutenção</option>
+            <option value="mao_de_obra">Mão de obra</option>
+            <option value="transporte">Transporte</option>
+            <option value="outros">Outros</option>
+        </select>
+
+        <br><br>
+
+        <label for="valor">Valor:</label>
+        <input type="number" id="valor" name="valor" step="0.01" required>
+
+        <br><br>
+
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
+
+        <br><br>
+
+        <label for="safra">Safra:</label>
+        <select id="safra" name="safra" required>
+            <option value="">Selecione</option>
+            <option value="Soja 2026">Soja 2026</option>
+            <option value="Milho 2026">Milho 2026</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Cadastrar despesa</button>
+    </form>
+
+</body>
+</html>
