@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LavCust - Despesas</title>
+</head>
+<body>
+
+    <h1>Despesas da Produção</h1>
+
+    <p>Consulte e gerencie as despesas das suas safras.</p>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Valor</th>
+                <th>Data</th>
+                <th>Safra</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for despesa in despesas %}
+            <tr>
+                <td>{{ despesa.descricao }}</td>
+                <td>{{ despesa.categoria }}</td>
+                <td>R$ {{ "%.2f"|format(despesa.valor) }}</td>
+                <td>{{ despesa.data }}</td>
+                <td>{{ despesa.safra }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
