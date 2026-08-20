@@ -35,7 +35,7 @@ Os diagramas abaixo representam a arquitetura e a estrutura técnica do projeto 
 
 **Responsável:** Duda
 
-![Modelo de Banco de Dados](banco.png)
+![Modelo de Banco de Dados](bancodedados.png)
 
 ---
 
