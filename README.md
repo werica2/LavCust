@@ -43,4 +43,4 @@ Os diagramas abaixo representam a arquitetura e a estrutura técnica do projeto 
 
 **Responsável:** Nicoly
 
-![Fluxograma](fluxograma.png)
+![Fluxograma](out/fluxograma/fluxograma.png)

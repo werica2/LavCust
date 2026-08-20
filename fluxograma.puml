@@ -1,0 +1,27 @@
+@startuml
+
+start
+
+:Produtor acessa o LavCust;
+:Realiza login;
+:Seleciona a opção desejada;
+
+if (Cadastrar despesa?) then (Sim)
+    :Informar tipo de despesa;
+    :Informar valor;
+    :Salvar despesa;
+    :Sistema registra a despesa;
+else (Não)
+    if (Consultar despesas?) then (Sim)
+        :Sistema lista as despesas;
+        :Produtor consulta ou edita;
+    else (Não)
+        :Sistema realiza os cálculos;
+        :Exibe custo total;
+        :Exibe lucro ou prejuízo;
+    endif
+endif
+
+stop
+
+@enduml
