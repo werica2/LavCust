@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LavCust - Início</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    <header>
+
+        <div class="logo">
+            Lav<span>Cust</span>
+        </div>
+
+        <div class="subtitulo-header">
+            Controle de despesas agrícolas
+        </div>
+
+    </header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+
+        <section class="titulo">
+
+            <h1>
+                Bem-vindo ao LavCust
+            </h1>
+
+            <p>
+                Selecione uma opção para continuar.
+            </p>
+
+        </section>
+
+
+        <!-- OPÇÕES -->
+        <section class="opcoes">
+
+            <!-- CADASTRO -->
+            <a href="/cadastro" class="opcao">
+
+                <div class="icone">
+                    +
+                </div>
+
+                <div>
+                    <h2>
+                        Cadastrar despesa
+                    </h2>
+
+                    <p>
+                        Registre uma nova despesa agrícola.
+                    </p>
+                </div>
+
+            </a>
+
+
+            <!-- CONSULTA -->
+            <a href="/consulta" class="opcao">
+
+                <div class="icone">
+                    ≡
+                </div>
+
+                <div>
+                    <h2>
+                        Consultar despesas
+                    </h2>
+
+                    <p>
+                        Visualize e consulte as despesas cadastradas.
+                    </p>
+                </div>
+
+            </a>
+
+
+            <!-- CÁLCULOS -->
+           <a href="/calculos" class="opcao">
+
+                <div class="icone">
+                    =
+                </div>
+
+                <div>
+                    <h2>
+                        Cálculos
+                    </h2>
+
+                    <p>
+                        Consulte o custo total e o resultado da lavoura.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- RODAPÉ -->
+    <footer>
+
+        LavCust © 2026 — Sistema de controle de despesas
+
+    </footer>
+
+</body>
+
+</html>
