@@ -1,0 +1,48 @@
+@startuml Modelo_DER
+
+' Configurações visuais do diagrama
+hide circle
+skinparam linetype ortho
+
+' Definition das Entidades
+entity "USUARIO" as usuario{
+  * id_cliente : INT <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * email : VARCHAR(100)
+  * senha : VARCHAR(95)
+}
+
+entity "SAFRA" as safra {
+  * id_pedido : INT <<PK>>
+  --
+  * id_usuario : INT <<FK>>
+  * nome : VARCHAR(100)
+  * ano : INT
+ 
+}
+
+entity "CATEGORIA_DESPESA" as categoria{
+  * id_item : INT <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * descricao : VARCHAR(255)
+}
+
+entity "DESPESA" as despesa{
+  * id_despesa : INT <<PK>>
+  --
+  * id_safra : INT <<FK>>
+  * id_categoria : INT <<FK>>
+  * descricao : VARCHAR(255)
+  * valor : DECIMAL(10,2)
+  * data_despesa : DATE
+  
+}
+
+' Relacionamentos e Cardinalidades (Crow's Foot)
+usuario ||--o{ safra: "possui"
+safra ||--|{ despesa: "registra"
+categoria ||--o{ despesa : "classifica"
+
+@enduml

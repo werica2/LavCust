@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LavCust - Cálculos</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .container h2 {
+            color: #198754;
+            margin-bottom: 25px;
+        }
+
+        .calculos {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .resultado {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card-calculo {
+            background: #f7fbf8;
+            border: 1px solid #dce8e0;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .card-calculo h3 {
+            margin-top: 0;
+            color: #68756d;
+            font-size: 17px;
+        }
+
+        .valor-calculo {
+            color: #198754;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .mensagem {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #198754;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .voltar:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+
+            .resultado {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        Lav<span>Cust</span>
+    </div>
+
+    <div class="subtitulo-header">
+        Controle de despesas agrícolas
+    </div>
+
+</header>
+
+
+<main>
+
+    <div class="container">
+
+        <h2>
+            Cálculos
+        </h2>
+
+
+        <div class="calculos">
+
+            {% if despesas %}
+
+                <div class="resultado">
+
+                    <!-- QUANTIDADE -->
+
+                    <div class="card-calculo">
+
+                        <h3>
+                            Quantidade de despesas
+                        </h3>
+
+                        <div class="valor-calculo">
+                            {{ quantidade }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOTAL -->
+
+                    <div class="card-calculo">
+
+                        <h3>
+                            Total das despesas
+                        </h3>
+
+                        <div class="valor-calculo">
+
+                            R$
+                            {{ "%.2f"|format(total) }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            {% else %}
+
+                <div class="mensagem">
+
+                    <h3>
+                        Nenhuma despesa cadastrada
+                    </h3>
+
+                    <p>
+                        Cadastre uma despesa para visualizar os cálculos.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <a href="/" class="voltar">
+            Voltar
+        </a>
+
+    </div>
+
+</main>
+
+
+<footer>
+
+    LavCust © 2026 — Sistema de controle de despesas
+
+</footer>
+
+</body>
+
+</html>
