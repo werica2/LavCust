@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}
+Cadastrar custo - LavCust
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-container">
+
+    <h1>
+        Cadastrar custo
+    </h1>
+
+    <p>
+        Registre uma nova despesa da lavoura.
+    </p>
+
+
+    <form method="POST">
+
+        <label>
+            Lavoura
+        </label>
+
+        <select name="lavoura" required>
+
+            <option value="">
+                Selecione
+            </option>
+
+            <option value="Soja">
+                Soja
+            </option>
+
+            <option value="Milho">
+                Milho
+            </option>
+
+        </select>
+
+
+        <label>
+            Categoria
+        </label>
+
+        <select name="categoria" required>
+
+            <option value="">
+                Selecione
+            </option>
+
+            <option value="Sementes">
+                Sementes
+            </option>
+
+            <option value="Fertilizantes">
+                Fertilizantes
+            </option>
+
+            <option value="Defensivos">
+                Defensivos
+            </option>
+
+            <option value="Combustível">
+                Combustível
+            </option>
+
+            <option value="Máquinas">
+                Máquinas
+            </option>
+
+            <option value="Mão de obra">
+                Mão de obra
+            </option>
+
+            <option value="Outros">
+                Outros
+            </option>
+
+        </select>
+
+
+        <label>
+            Descrição
+        </label>
+
+        <input
+            type="text"
+            name="descricao"
+            placeholder="Ex.: Fertilizante NPK"
+            required
+        >
+
+
+        <label>
+            Quantidade
+        </label>
+
+        <input
+            type="number"
+            name="quantidade"
+            step="0.01"
+            min="0"
+            placeholder="Ex.: 10"
+            required
+        >
+
+
+        <label>
+            Valor unitário (R$)
+        </label>
+
+        <input
+            type="number"
+            name="valor"
+            step="0.01"
+            min="0"
+            placeholder="Ex.: 150.00"
+            required
+        >
+
+
+        <button type="submit">
+            Cadastrar custo
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

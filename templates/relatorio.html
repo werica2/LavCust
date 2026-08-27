@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}
+Relatório - LavCust
+{% endblock %}
+
+
+{% block content %}
+
+<h1>
+    Relatório de custos
+</h1>
+
+
+<div class="card destaque">
+
+    <h2>
+        Custo total da produção
+    </h2>
+
+    <p>
+        R$ {{ "%.2f"|format(total) }}
+    </p>
+
+</div>
+
+
+<h2>
+    Custos cadastrados
+</h2>
+
+
+{% if custos %}
+
+<div class="tabela-container">
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>Lavoura</th>
+            <th>Categoria</th>
+            <th>Descrição</th>
+            <th>Total</th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody>
+
+        {% for custo in custos %}
+
+        <tr>
+
+            <td>
+                {{ custo["lavoura"] }}
+            </td>
+
+            <td>
+                {{ custo["categoria"] }}
+            </td>
+
+            <td>
+                {{ custo["descricao"] }}
+            </td>
+
+            <td>
+                R$
+                {{ "%.2f"|format(
+                    custo["quantidade"] * custo["valor"]
+                ) }}
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+{% endif %}
+
+
+<section class="lucro">
+
+    <h2>
+        📈 Estimar lucro ou prejuízo
+    </h2>
+
+    <p>
+        Informe a quantidade produzida e o preço de venda
+        da saca.
+    </p>
+
+
+    <form method="POST">
+
+        <label>
+            Quantidade de sacas produzidas
+        </label>
+
+        <input
+            type="number"
+            name="quantidade_sacas"
+            step="0.01"
+            min="0"
+            required
+        >
+
+
+        <label>
+            Preço de venda por saca (R$)
+        </label>
+
+        <input
+            type="number"
+            name="preco_saca"
+            step="0.01"
+            min="0"
+            required
+        >
+
+
+        <button type="submit">
+            Calcular resultado
+        </button>
+
+    </form>
+
+
+    {% if lucro is not none %}
+
+    <div class="resultado">
+
+        <h3>
+            Receita estimada
+        </h3>
+
+        <p>
+            R$ {{ "%.2f"|format(receita) }}
+        </p>
+
+
+        <h3>
+            Resultado
+        </h3>
+
+        <p>
+            R$ {{ "%.2f"|format(lucro) }}
+        </p>
+
+
+        {% if lucro >= 0 %}
+
+        <strong>
+            ✅ Lucro estimado
+        </strong>
+
+        {% else %}
+
+        <strong>
+            ⚠️ Prejuízo estimado
+        </strong>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

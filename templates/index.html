@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+Início - LavCust
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <h1>
+        Controle os custos da sua lavoura
+    </h1>
+
+    <p>
+        Organize suas despesas de produção e acompanhe
+        os resultados da sua lavoura de forma simples.
+    </p>
+
+    <a class="botao"
+       href="{{ url_for('cadastro') }}">
+        Cadastrar novo custo
+    </a>
+
+</section>
+
+
+<section class="cards">
+
+    <div class="card">
+
+        <h3>
+            💰 Total de custos
+        </h3>
+
+        <p>
+            R$ {{ "%.2f"|format(total) }}
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            📋 Registros
+        </h3>
+
+        <p>
+            {{ custos|length }}
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            📊 Relatório
+        </h3>
+
+        <a href="{{ url_for('relatorio') }}">
+            Ver relatório
+        </a>
+
+    </div>
+
+</section>
+
+
+<section class="sobre">
+
+    <h2>
+        Sobre o LavCust
+    </h2>
+
+    <p>
+        O LavCust é um sistema desenvolvido para auxiliar
+        produtores rurais no controle dos custos de produção
+        de lavouras, como soja e milho.
+    </p>
+
+</section>
+
+{% endblock %}

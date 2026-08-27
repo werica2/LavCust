@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}
+Custos - LavCust
+{% endblock %}
+
+
+{% block content %}
+
+<h1>
+    Custos cadastrados
+</h1>
+
+<a class="botao"
+   href="{{ url_for('cadastro') }}">
+    + Novo custo
+</a>
+
+
+{% if custos %}
+
+<div class="tabela-container">
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>Lavoura</th>
+            <th>Categoria</th>
+            <th>Descrição</th>
+            <th>Quantidade</th>
+            <th>Valor</th>
+            <th>Total</th>
+            <th>Ações</th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody>
+
+        {% for custo in custos %}
+
+        <tr>
+
+            <td>
+                {{ custo["lavoura"] }}
+            </td>
+
+            <td>
+                {{ custo["categoria"] }}
+            </td>
+
+            <td>
+                {{ custo["descricao"] }}
+            </td>
+
+            <td>
+                {{ custo["quantidade"] }}
+            </td>
+
+            <td>
+                R$ {{ "%.2f"|format(custo["valor"]) }}
+            </td>
+
+            <td>
+                R$ {{ "%.2f"|format(custo["quantidade"] * custo["valor"]) }}
+            </td>
+
+            <td>
+
+                <a class="editar"
+                   href="{{ url_for('editar', id=custo['id']) }}">
+                    Editar
+                </a>
+
+                <a class="excluir"
+                   href="{{ url_for('excluir', id=custo['id']) }}"
+                   onclick="return confirm('Deseja excluir este custo?')">
+                    Excluir
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="mensagem">
+
+    <h2>
+        Nenhum custo cadastrado.
+    </h2>
+
+    <p>
+        Comece cadastrando uma despesa da sua lavoura.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
