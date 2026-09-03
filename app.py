@@ -1,115 +1,46 @@
 from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
 
 app = Flask(__name__)
 
-despesas = [
-    {
-        "id": 1,
-        "descricao": "Compra de sementes",
-        "categoria": "Sementes",
-        "valor": 5000.00,
-        "data": "10/08/2026",
-        "safra": "Soja 2026"
-    },
-    {
-        "id": 2,
-        "descricao": "Compra de fertilizantes",
-        "categoria": "Fertilizantes",
-        "valor": 3500.00,
-        "data": "12/08/2026",
-        "safra": "Milho 2026"
-    },
-    {
-        "id": 3,
-        "descricao": "Compra de defensivos agrícolas",
-        "categoria": "Defensivos",
-        "valor": 2800.00,
-        "data": "13/08/2026",
-        "safra": "Soja 2026"
-    },
-    {
-        "id": 4,
-        "descricao": "Manutenção de máquinas agrícolas",
-        "categoria": "Manutenção",
-        "valor": 4200.00,
-        "data": "14/08/2026",
-        "safra": "Milho 2026"
-    },
-    {
-        "id": 5,
-        "descricao": "Combustível para máquinas",
-        "categoria": "Combustível",
-        "valor": 1850.00,
-        "data": "15/08/2026",
-        "safra": "Soja 2026"
-    },
-    {
-        "id": 6,
-        "descricao": "Mão de obra para plantio",
-        "categoria": "Mão de obra",
-        "valor": 3200.00,
-        "data": "16/08/2026",
-        "safra": "Milho 2026"
-    },
-    {
-        "id": 7,
-        "descricao": "Aluguel de máquinas",
-        "categoria": "Máquinas",
-        "valor": 4500.00,
-        "data": "17/08/2026",
-        "safra": "Soja 2026"
-    },
-    {
-        "id": 8,
-        "descricao": "Compra de herbicidas",
-        "categoria": "Defensivos",
-        "valor": 2150.00,
-        "data": "18/08/2026",
-        "safra": "Milho 2026"
-    },
-    {
-        "id": 9,
-        "descricao": "Transporte da produção",
-        "categoria": "Transporte",
-        "valor": 2700.00,
-        "data": "19/08/2026",
-        "safra": "Soja 2026"
-    },
-    {
-        "id": 10,
-        "descricao": "Análise e correção do solo",
-        "categoria": "Solo",
-        "valor": 1200.00,
-        "data": "20/08/2026",
-        "safra": "Milho 2026"
-    },
-    {
-        "id": 11,
-        "descricao": "Compra de calcário",
-        "categoria": "Insumos",
-        "valor": 2900.00,
-        "data": "21/08/2026",
-        "safra": "Soja 2026"
-    },
-    {
-        "id": 12,
-        "descricao": "Manutenção do sistema de irrigação",
-        "categoria": "Irrigação",
-        "valor": 1600.00,
-        "data": "22/08/2026",
-        "safra": "Milho 2026"
-    }
-]
+DATABASE = "lavcust.db"
+
+
+def conectar_banco():
+    conexao = sqlite3.connect(DATABASE)
+    conexao.row_factory = sqlite3.Row
+    return conexao
+
+
+def criar_banco():
+    conexao = conectar_banco()
+
+    conexao.execute("""
+        CREATE TABLE IF NOT EXISTS custos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lavoura TEXT NOT NULL,
+            categoria TEXT NOT NULL,
+            descricao TEXT NOT NULL,
+            quantidade REAL NOT NULL,
+            valor REAL NOT NULL,
+            data TEXT,
+            safra TEXT
+        )
+    """)
+
+    conexao.commit()
+    conexao.close()
 
 
 @app.route("/", methods=["GET", "POST"])
 def inicio():
+
     if request.method == "POST":
-        usuario = request.form["usuario"]
-        senha = request.form["senha"]
+        usuario = request.form.get("usuario")
+        senha = request.form.get("senha")
 
         if usuario == "admin" and senha == "1234":
-            return redirect(url_for("listar_despesas"))
+            return redirect(url_for("custos"))
 
         return render_template(
             "login.html",
@@ -119,65 +50,211 @@ def inicio():
     return render_template("login.html")
 
 
+@app.route("/cadastro", methods=["GET", "POST"])
+def cadastro():
+
+    if request.method == "POST":
+
+        lavoura = request.form.get("lavoura", "")
+        categoria = request.form.get("categoria", "")
+        descricao = request.form.get("descricao", "")
+        quantidade = float(request.form.get("quantidade", 1))
+        valor = request.form.get("valor", "0")
+        data = request.form.get("data", "")
+        safra = request.form.get("safra", "")
+
+        valor = valor.replace(".", "").replace(",", ".")
+
+        conexao = conectar_banco()
+
+        conexao.execute("""
+            INSERT INTO custos
+            (lavoura, categoria, descricao, quantidade, valor, data, safra)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            lavoura,
+            categoria,
+            descricao,
+            quantidade,
+            float(valor),
+            data,
+            safra
+        ))
+
+        conexao.commit()
+        conexao.close()
+
+        return redirect(url_for("custos"))
+
+    return render_template("cadastro.html")
+
+
+@app.route("/custos")
+def custos():
+
+    conexao = conectar_banco()
+
+    custos = conexao.execute(
+        "SELECT * FROM custos ORDER BY id DESC"
+    ).fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "custos.html",
+        custos=custos
+    )
+
+
 @app.route("/despesas")
 def listar_despesas():
+
     pesquisa = request.args.get("pesquisa", "")
 
-    despesas_filtradas = []
+    conexao = conectar_banco()
 
-    for despesa in despesas:
-        texto = (
-            despesa["descricao"]
-            + " "
-            + despesa["categoria"]
-            + " "
-            + despesa["safra"]
-        )
+    custos = conexao.execute("""
+        SELECT * FROM custos
+        WHERE descricao LIKE ?
+           OR categoria LIKE ?
+           OR lavoura LIKE ?
+           OR safra LIKE ?
+        ORDER BY id DESC
+    """, (
+        f"%{pesquisa}%",
+        f"%{pesquisa}%",
+        f"%{pesquisa}%",
+        f"%{pesquisa}%"
+    )).fetchall()
 
-        if pesquisa.lower() in texto.lower():
-            despesas_filtradas.append(despesa)
+    conexao.close()
 
     return render_template(
         "despesas.html",
-        despesas=despesas_filtradas,
+        despesas=custos,
         pesquisa=pesquisa
     )
 
 
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
-def editar_despesa(id):
-    despesa = next(
-        (d for d in despesas if d["id"] == id),
-        None
-    )
+def editar(id):
 
-    if despesa is None:
-        return "Despesa não encontrada!"
+    conexao = conectar_banco()
+
+    custo = conexao.execute(
+        "SELECT * FROM custos WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    if custo is None:
+        conexao.close()
+        return "Custo não encontrado!"
 
     if request.method == "POST":
-        despesa["descricao"] = request.form["descricao"]
-        despesa["categoria"] = request.form["categoria"]
-        despesa["valor"] = float(request.form["valor"])
-        despesa["data"] = request.form["data"]
-        despesa["safra"] = request.form["safra"]
 
-        return redirect(url_for("listar_despesas"))
+        lavoura = request.form.get("lavoura", "")
+        categoria = request.form.get("categoria", "")
+        descricao = request.form.get("descricao", "")
+        quantidade = float(request.form.get("quantidade", 1))
+        valor = request.form.get("valor", "0")
+        data = request.form.get("data", "")
+        safra = request.form.get("safra", "")
+
+        valor = valor.replace(".", "").replace(",", ".")
+
+        conexao.execute("""
+            UPDATE custos
+            SET lavoura = ?,
+                categoria = ?,
+                descricao = ?,
+                quantidade = ?,
+                valor = ?,
+                data = ?,
+                safra = ?
+            WHERE id = ?
+        """, (
+            lavoura,
+            categoria,
+            descricao,
+            quantidade,
+            float(valor),
+            data,
+            safra,
+            id
+        ))
+
+        conexao.commit()
+        conexao.close()
+
+        return redirect(url_for("custos"))
+
+    conexao.close()
 
     return render_template(
         "editar.html",
-        despesa=despesa
+        custo=custo
     )
+
 
 @app.route("/excluir/<int:id>")
-def excluir_despesa(id):
-    despesa = next(
-        (d for d in despesas if d["id"] == id),
-        None
+def excluir(id):
+
+    conexao = conectar_banco()
+
+    conexao.execute(
+        "DELETE FROM custos WHERE id = ?",
+        (id,)
     )
 
-    if despesa is not None:
-        despesas.remove(despesa)
+    conexao.commit()
+    conexao.close()
 
-    return redirect(url_for("listar_despesas"))
+    return redirect(url_for("custos"))
+
+
+@app.route("/relatorio", methods=["GET", "POST"])
+def relatorio():
+
+    conexao = conectar_banco()
+
+    custos = conexao.execute(
+        "SELECT * FROM custos ORDER BY lavoura, categoria"
+    ).fetchall()
+
+    total = conexao.execute(
+        "SELECT SUM(quantidade * valor) AS total FROM custos"
+    ).fetchone()["total"]
+
+    conexao.close()
+
+    if total is None:
+        total = 0
+
+    lucro = None
+    receita = None
+
+    if request.method == "POST":
+
+        quantidade_sacas = float(
+            request.form["quantidade_sacas"]
+        )
+
+        preco_saca = float(
+            request.form["preco_saca"]
+        )
+
+        receita = quantidade_sacas * preco_saca
+        lucro = receita - total
+
+    return render_template(
+        "relatorio.html",
+        custos=custos,
+        total=total,
+        receita=receita,
+        lucro=lucro
+    )
+
+
 if __name__ == "__main__":
+    criar_banco()
     app.run(debug=True)
