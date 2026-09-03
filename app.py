@@ -291,7 +291,47 @@ def relatorio():
         lucro=lucro
     )
 
+@app.route("/consulta")
+def consulta():
+    conexao = conectar_banco()
 
+    despesas = conexao.execute(
+        "SELECT * FROM custos ORDER BY id DESC"
+    ).fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "consulta.html",
+        despesas=despesas
+    )
+
+
+@app.route("/calculos")
+def calculos():
+    conexao = conectar_banco()
+
+    quantidade = conexao.execute(
+        "SELECT COUNT(*) AS quantidade FROM custos"
+    ).fetchone()["quantidade"]
+
+    total = conexao.execute(
+        "SELECT SUM(quantidade * valor) AS total FROM custos"
+    ).fetchone()["total"]
+
+    conexao.close()
+
+    if total is None:
+        total = 0
+
+    despesas = quantidade > 0
+
+    return render_template(
+        "calculos.html",
+        despesas=despesas,
+        quantidade=quantidade,
+        total=total
+    )
 if __name__ == "__main__":
     criar_banco()
     app.run(debug=True)
