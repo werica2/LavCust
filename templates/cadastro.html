@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LavCust - Cadastro de Despesa</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    <header>
+
+        <div class="logo">
+            Lav<span>Cust</span>
+        </div>
+
+        <div class="subtitulo-header">
+            Controle de despesas agrícolas
+        </div>
+
+    </header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+
+        <section class="titulo">
+
+            <h1>
+                Cadastro de Despesa
+            </h1>
+
+            <p>
+                Registre uma nova despesa para manter seus custos organizados.
+            </p>
+
+        </section>
+
+
+        <!-- CARD -->
+        <section class="card">
+
+            <h2>
+                Nova despesa
+            </h2>
+
+
+            <form method="POST" action="/">
+
+                <!-- DESCRIÇÃO -->
+                <div class="campo">
+
+                    <label for="descricao">
+                        Descrição da despesa
+                    </label>
+
+                    <input
+                        type="text"
+                        id="descricao"
+                        name="descricao"
+                        placeholder="Ex.: Compra de fertilizantes"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CATEGORIA + VALOR -->
+                <div class="linha">
+
+                    <!-- CATEGORIA -->
+                    <div class="campo">
+
+                        <label for="categoria">
+                            Categoria
+                        </label>
+
+                        <select
+                            id="categoria"
+                            name="categoria"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione uma categoria
+                            </option>
+
+                            <option value="sementes">
+                                Sementes
+                            </option>
+
+                            <option value="fertilizantes">
+                                Fertilizantes
+                            </option>
+
+                            <option value="defensivos">
+                                Defensivos agrícolas
+                            </option>
+
+                            <option value="combustivel">
+                                Combustível
+                            </option>
+
+                            <option value="manutencao">
+                                Manutenção
+                            </option>
+
+                            <option value="mao_de_obra">
+                                Mão de obra
+                            </option>
+
+                            <option value="transporte">
+                                Transporte
+                            </option>
+
+                            <option value="outros">
+                                Outros
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- VALOR -->
+                    <div class="campo">
+
+                        <label for="valor">
+                            Valor
+                        </label>
+
+                        <div class="valor-container">
+
+                            <span class="moeda">
+                                R$
+                            </span>
+
+                            <input
+                                type="text"
+                                id="valor"
+                                name="valor"
+                                value="0,00"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                readonly
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DATA + SAFRA -->
+                <div class="linha">
+
+                    <!-- DATA -->
+                    <div class="campo">
+
+                        <label for="data">
+                            Data da despesa
+                        </label>
+
+                        <input
+                            type="date"
+                            id="data"
+                            name="data"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- SAFRA -->
+                    <div class="campo">
+
+                        <label for="safra">
+                            Safra
+                        </label>
+
+                        <select
+                            id="safra"
+                            name="safra"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione uma safra
+                            </option>
+
+                            <option value="Soja 2026">
+                                Soja 2026
+                            </option>
+
+                            <option value="Milho 2026">
+                                Milho 2026
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BOTÃO -->
+                <button
+                    type="submit"
+                    class="botao"
+                >
+                    Cadastrar despesa
+                </button>
+
+            </form>
+
+            <hr style="margin: 35px 0; border: 0; border-top: 1px solid #e0e8e3;">
+
+<h2>Despesas cadastradas</h2>
+
+{% if despesas %}
+
+    {% for despesa in despesas %}
+
+        <div style="
+            background: #f7fbf8;
+            border: 1px solid #dce8e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        ">
+
+            <strong>
+                {{ despesa.descricao }}
+            </strong>
+
+            <p style="margin-top: 6px; color: #68756d;">
+                Categoria: {{ despesa.categoria }} |
+                Valor: R$ {{ "%.2f"|format(despesa.valor) }} |
+                Data: {{ despesa.data }} |
+                Safra: {{ despesa.safra }}
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>Nenhuma despesa cadastrada.</p>
+
+{% endif %}
+
+        </section>
+
+    </main>
+
+
+    <!-- RODAPÉ -->
+    <footer>
+
+        LavCust © 2026 — Sistema de controle de despesas
+
+    </footer>
+
+
+    <!-- =========================
+         JAVASCRIPT DO VALOR
+         ========================= -->
+
+    <script>
+
+        const campoValor =
+            document.getElementById("valor");
+
+
+        /*
+         * Guarda o valor em CENTAVOS.
+         *
+         * Exemplo:
+         *
+         * 0     = R$ 0,00
+         * 1     = R$ 0,01
+         * 12    = R$ 0,12
+         * 125   = R$ 1,25
+         * 1250  = R$ 12,50
+         */
+        let valorCentavos = 0;
+
+
+        /*
+         * Atualiza o que aparece na tela.
+         */
+        function atualizarValor() {
+
+            const reais =
+                Math.floor(valorCentavos / 100);
+
+            const centavos =
+                valorCentavos % 100;
+
+
+            campoValor.value =
+                reais.toLocaleString("pt-BR")
+                + ","
+                + centavos
+                    .toString()
+                    .padStart(2, "0");
+        }
+
+
+        /*
+         * Detecta o que a pessoa digitou.
+         */
+        campoValor.addEventListener(
+            "keydown",
+            function(event) {
+
+
+                /* =====================
+                   DIGITOU UM NÚMERO
+                   ===================== */
+
+                if (
+                    event.key >= "0" &&
+                    event.key <= "9"
+                ) {
+
+                    event.preventDefault();
+
+
+                    const numero =
+                        Number(event.key);
+
+
+                    /*
+                     * Empurra os números
+                     * para a esquerda.
+                     */
+                    valorCentavos =
+                        valorCentavos * 10
+                        + numero;
+
+
+                    /*
+                     * Limite máximo.
+                     */
+                    if (
+                        valorCentavos >
+                        999999999999
+                    ) {
+
+                        valorCentavos =
+                            999999999999;
+
+                    }
+
+
+                    atualizarValor();
+
+                }
+
+
+                /* =====================
+                   BACKSPACE
+                   ===================== */
+
+                else if (
+                    event.key === "Backspace"
+                ) {
+
+                    event.preventDefault();
+
+
+                    valorCentavos =
+                        Math.floor(
+                            valorCentavos / 10
+                        );
+
+
+                    atualizarValor();
+
+                }
+
+
+                /* =====================
+                   DELETE
+                   ===================== */
+
+                else if (
+                    event.key === "Delete"
+                ) {
+
+                    event.preventDefault();
+
+
+                    valorCentavos = 0;
+
+
+                    atualizarValor();
+
+                }
+
+
+                /* =====================
+                   OUTRAS TECLAS
+                   ===================== */
+
+                else if (
+
+                    event.key !== "Tab" &&
+                    event.key !== "Shift" &&
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight"
+
+                ) {
+
+                    event.preventDefault();
+
+                }
+
+            }
+        );
+
+
+        atualizarValor();
+
+    </script>
+
+</body>
+
+</html>

@@ -18,15 +18,34 @@ def criar_banco():
     conexao.execute("""
         CREATE TABLE IF NOT EXISTS custos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            lavoura TEXT NOT NULL,
-            categoria TEXT NOT NULL,
-            descricao TEXT NOT NULL,
-            quantidade REAL NOT NULL,
-            valor REAL NOT NULL,
+            lavoura TEXT NOT NULL DEFAULT '',
+            categoria TEXT NOT NULL DEFAULT '',
+            descricao TEXT NOT NULL DEFAULT '',
+            quantidade REAL NOT NULL DEFAULT 1,
+            valor REAL NOT NULL DEFAULT 0,
             data TEXT,
             safra TEXT
         )
     """)
+
+    # Garante que bancos antigos tenham as novas colunas
+    colunas = [
+        ("lavoura", "TEXT DEFAULT ''"),
+        ("quantidade", "REAL DEFAULT 1"),
+        ("data", "TEXT"),
+        ("safra", "TEXT")
+    ]
+
+    existentes = [
+        coluna["name"]
+        for coluna in conexao.execute("PRAGMA table_info(custos)").fetchall()
+    ]
+
+    for nome, tipo in colunas:
+        if nome not in existentes:
+            conexao.execute(
+                f"ALTER TABLE custos ADD COLUMN {nome} {tipo}"
+            )
 
     conexao.commit()
     conexao.close()
@@ -40,7 +59,7 @@ def inicio():
         senha = request.form.get("senha")
 
         if usuario == "admin" and senha == "1234":
-            return redirect(url_for("custos"))
+            return redirect(url_for("listar_despesas"))
 
         return render_template(
             "login.html",
@@ -58,12 +77,22 @@ def cadastro():
         lavoura = request.form.get("lavoura", "")
         categoria = request.form.get("categoria", "")
         descricao = request.form.get("descricao", "")
-        quantidade = float(request.form.get("quantidade", 1))
+        quantidade = request.form.get("quantidade", "1")
         valor = request.form.get("valor", "0")
         data = request.form.get("data", "")
         safra = request.form.get("safra", "")
 
+        try:
+            quantidade = float(quantidade.replace(",", "."))
+        except ValueError:
+            quantidade = 1
+
         valor = valor.replace(".", "").replace(",", ".")
+
+        try:
+            valor = float(valor)
+        except ValueError:
+            valor = 0
 
         conexao = conectar_banco()
 
@@ -76,7 +105,7 @@ def cadastro():
             categoria,
             descricao,
             quantidade,
-            float(valor),
+            valor,
             data,
             safra
         ))
@@ -84,26 +113,9 @@ def cadastro():
         conexao.commit()
         conexao.close()
 
-        return redirect(url_for("custos"))
+        return redirect(url_for("listar_despesas"))
 
     return render_template("cadastro.html")
-
-
-@app.route("/custos")
-def custos():
-
-    conexao = conectar_banco()
-
-    custos = conexao.execute(
-        "SELECT * FROM custos ORDER BY id DESC"
-    ).fetchall()
-
-    conexao.close()
-
-    return render_template(
-        "custos.html",
-        custos=custos
-    )
 
 
 @app.route("/despesas")
@@ -132,8 +144,17 @@ def listar_despesas():
     return render_template(
         "despesas.html",
         despesas=custos,
+        custos=custos,
         pesquisa=pesquisa
     )
+
+
+# Mantém a rota /custos funcionando,
+# mas usa despesas.html porque esse arquivo existe no projeto.
+@app.route("/custos")
+def custos():
+
+    return listar_despesas()
 
 
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
@@ -155,12 +176,22 @@ def editar(id):
         lavoura = request.form.get("lavoura", "")
         categoria = request.form.get("categoria", "")
         descricao = request.form.get("descricao", "")
-        quantidade = float(request.form.get("quantidade", 1))
+        quantidade = request.form.get("quantidade", "1")
         valor = request.form.get("valor", "0")
         data = request.form.get("data", "")
         safra = request.form.get("safra", "")
 
+        try:
+            quantidade = float(quantidade.replace(",", "."))
+        except ValueError:
+            quantidade = 1
+
         valor = valor.replace(".", "").replace(",", ".")
+
+        try:
+            valor = float(valor)
+        except ValueError:
+            valor = 0
 
         conexao.execute("""
             UPDATE custos
@@ -177,7 +208,7 @@ def editar(id):
             categoria,
             descricao,
             quantidade,
-            float(valor),
+            valor,
             data,
             safra,
             id
@@ -186,13 +217,14 @@ def editar(id):
         conexao.commit()
         conexao.close()
 
-        return redirect(url_for("custos"))
+        return redirect(url_for("listar_despesas"))
 
     conexao.close()
 
     return render_template(
         "editar.html",
-        custo=custo
+        custo=custo,
+        despesa=custo
     )
 
 
@@ -209,7 +241,7 @@ def excluir(id):
     conexao.commit()
     conexao.close()
 
-    return redirect(url_for("custos"))
+    return redirect(url_for("listar_despesas"))
 
 
 @app.route("/relatorio", methods=["GET", "POST"])
