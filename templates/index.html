@@ -1,86 +1,555 @@
 {% extends "base.html" %}
 
-{% block title %}
-Início - LavCust
-{% endblock %}
-
+{% block title %}Início — LavCust{% endblock %}
 
 {% block content %}
 
-<section class="hero">
+<div class="pagina-dashboard">
 
-    <h1>
-        Controle os custos da sua lavoura
-    </h1>
+    <!-- BANNER -->
+    <section class="banner-inicial">
 
-    <p>
-        Organize suas despesas de produção e acompanhe
-        os resultados da sua lavoura de forma simples.
-    </p>
+        <div class="banner-sombra"></div>
 
-    <a class="botao"
-       href="{{ url_for('cadastro') }}">
-        Cadastrar novo custo
-    </a>
+        <div class="banner-conteudo">
 
-</section>
+            <div class="banner-esquerda">
 
+                <div class="logo-banner-box">
+                    <img
+                        src="{{ url_for('static', filename='logo.png') }}"
+                        alt="LavCust"
+                    >
+                </div>
 
-<section class="cards">
+                <div class="boas-vindas">
 
-    <div class="card">
+                    <h1>
+                        Olá, {{ nome }}!
+                    </h1>
 
-        <h3>
-            💰 Total de custos
-        </h3>
+                    <p>
+                        Seja bem-vindo(a) ao LavCust.
+                        Aqui você pode acompanhar e gerenciar
+                        todos os dados da sua lavoura.
+                    </p>
 
-        <p>
-            R$ {{ "%.2f"|format(total) }}
-        </p>
+                </div>
 
-    </div>
+            </div>
 
+            <div class="data-hoje">
 
-    <div class="card">
+                <span>Hoje é</span>
 
-        <h3>
-            📋 Registros
-        </h3>
+                <strong id="dataAtual">
+                    Carregando...
+                </strong>
 
-        <p>
-            {{ custos|length }}
-        </p>
+            </div>
 
-    </div>
+        </div>
 
-
-    <div class="card">
-
-        <h3>
-            📊 Relatório
-        </h3>
-
-        <a href="{{ url_for('relatorio') }}">
-            Ver relatório
-        </a>
-
-    </div>
-
-</section>
+    </section>
 
 
-<section class="sobre">
+    <!-- CARDS DE RESUMO -->
+    <section class="cards-resumo">
 
-    <h2>
-        Sobre o LavCust
-    </h2>
+        <article class="card-resumo">
 
-    <p>
-        O LavCust é um sistema desenvolvido para auxiliar
-        produtores rurais no controle dos custos de produção
-        de lavouras, como soja e milho.
-    </p>
+            <div class="card-icone despesa">
+                R$
+            </div>
 
-</section>
+            <div>
+                <span>Total de Despesas</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(total_despesas|default(0)) }}
+                </strong>
+            </div>
+
+        </article>
+
+
+        <article class="card-resumo">
+
+            <div class="card-icone venda">
+                $
+            </div>
+
+            <div>
+                <span>Total de Vendas</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(total_vendas|default(0)) }}
+                </strong>
+            </div>
+
+        </article>
+
+
+        <article class="card-resumo">
+
+            <div class="card-icone lucro">
+                %
+            </div>
+
+            <div>
+                <span>Lucro Estimado</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(lucro|default(0)) }}
+                </strong>
+            </div>
+
+        </article>
+
+
+        <article class="card-resumo">
+
+            <div class="card-icone quantidade">
+                #
+            </div>
+
+            <div>
+                <span>Nº de Despesas</span>
+
+                <strong>
+                    {{ qtd_registros|default(0) }}
+                </strong>
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- ACESSO RÁPIDO -->
+    <section class="secao-acesso">
+
+        <h2>Acesso rápido</h2>
+
+        <div class="grid-acesso">
+
+            <a
+                href="{{ url_for('cadastro') }}"
+                class="card-acesso"
+            >
+                <div class="icone-acesso">+</div>
+
+                <strong>
+                    Cadastrar Despesas
+                </strong>
+
+                <span>
+                    Adicione novos gastos
+                </span>
+            </a>
+
+
+            <a
+                href="{{ url_for('listar_despesas') }}"
+                class="card-acesso"
+            >
+                <div class="icone-acesso">▣</div>
+
+                <strong>
+                    Despesas
+                </strong>
+
+                <span>
+                    Veja e gerencie suas despesas
+                </span>
+            </a>
+
+
+            <a
+                href="{{ url_for('cadastrar_venda') }}"
+                class="card-acesso"
+            >
+                <div class="icone-acesso">$</div>
+
+                <strong>
+                    Registrar Venda
+                </strong>
+
+                <span>
+                    Registre suas vendas
+                </span>
+            </a>
+
+
+            <a
+                href="{{ url_for('relatorio') }}"
+                class="card-acesso"
+            >
+                <div class="icone-acesso">▤</div>
+
+                <strong>
+                    Relatório
+                </strong>
+
+                <span>
+                    Acompanhe seus resultados
+                </span>
+            </a>
+
+
+            <div class="card-frase">
+
+                <div class="folha-frase">
+                    🌿
+                </div>
+
+                <strong>
+                    “Planejamento hoje,<br>
+                    colheita amanhã!”
+                </strong>
+
+                <span class="folhas-decoracao">
+                    🌱
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- GRÁFICOS -->
+    <section class="secao-graficos">
+
+        <div class="cabecalho-graficos">
+
+            <div>
+                <h2>Visão geral</h2>
+
+                <p>
+                    Acompanhe os resultados da sua produção.
+                </p>
+            </div>
+
+            <a href="{{ url_for('relatorio') }}">
+                Ver relatório
+            </a>
+
+        </div>
+
+
+        <div class="grid-graficos">
+
+            <!-- GRÁFICO DESPESAS X VENDAS -->
+            <article class="grafico-card">
+
+                <h3>
+                    Despesas x Vendas
+                </h3>
+
+                <div class="grafico-container">
+                    <canvas id="graficoComparacao"></canvas>
+                </div>
+
+            </article>
+
+
+            <!-- GRÁFICO DE CATEGORIAS -->
+            <article class="grafico-card">
+
+                <h3>
+                    Distribuição dos Custos
+                </h3>
+
+                <div class="grafico-container">
+                    <canvas id="graficoCategorias"></canvas>
+                </div>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- DADOS VINDOS DO FLASK -->
+    <div
+        id="dadosDashboard"
+        hidden
+        data-despesas="{{ total_despesas|default(0) }}"
+        data-vendas="{{ total_vendas|default(0) }}"
+        data-categorias='{{ categorias|default([])|tojson }}'
+        data-valores='{{ valores_categorias|default([])|tojson }}'
+    ></div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        /* DATA ATUAL */
+
+        const dataAtual =
+            document.getElementById("dataAtual");
+
+        if (dataAtual) {
+
+            const hoje = new Date();
+
+            dataAtual.textContent =
+                hoje.toLocaleDateString(
+                    "pt-BR",
+                    {
+                        weekday: "long",
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric"
+                    }
+                );
+        }
+
+
+        /* DADOS DO DASHBOARD */
+
+        const dados =
+            document.getElementById(
+                "dadosDashboard"
+            );
+
+        if (!dados) {
+            return;
+        }
+
+
+        const totalDespesas =
+            Number(
+                dados.dataset.despesas
+            ) || 0;
+
+
+        const totalVendas =
+            Number(
+                dados.dataset.vendas
+            ) || 0;
+
+
+        let categorias = [];
+        let valores = [];
+
+
+        try {
+
+            categorias =
+                JSON.parse(
+                    dados.dataset.categorias
+                );
+
+            valores =
+                JSON.parse(
+                    dados.dataset.valores
+                );
+
+        } catch (erro) {
+
+            categorias = [];
+            valores = [];
+
+        }
+
+
+        /* GRÁFICO 1 */
+
+        const graficoComparacao =
+            document.getElementById(
+                "graficoComparacao"
+            );
+
+
+        if (
+            graficoComparacao &&
+            typeof Chart !== "undefined"
+        ) {
+
+            new Chart(
+                graficoComparacao,
+                {
+
+                    type: "bar",
+
+                    data: {
+
+                        labels: [
+                            "Despesas",
+                            "Vendas"
+                        ],
+
+                        datasets: [
+
+                            {
+
+                                data: [
+                                    totalDespesas,
+                                    totalVendas
+                                ],
+
+                                backgroundColor: [
+                                    "#FFAE17",
+                                    "#31401A"
+                                ],
+
+                                borderRadius: 7,
+
+                                maxBarThickness: 70
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        plugins: {
+
+                            legend: {
+                                display: false
+                            }
+
+                        },
+
+                        scales: {
+
+                            y: {
+                                beginAtZero: true
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* GRÁFICO 2 */
+
+        const graficoCategorias =
+            document.getElementById(
+                "graficoCategorias"
+            );
+
+
+        if (
+            graficoCategorias &&
+            typeof Chart !== "undefined"
+        ) {
+
+            let labelsGrafico = categorias;
+            let valoresGrafico = valores;
+
+
+            if (categorias.length === 0) {
+
+                labelsGrafico = [
+                    "Sem despesas"
+                ];
+
+                valoresGrafico = [
+                    1
+                ];
+
+            }
+
+
+            new Chart(
+                graficoCategorias,
+                {
+
+                    type: "doughnut",
+
+                    data: {
+
+                        labels:
+                            labelsGrafico,
+
+                        datasets: [
+
+                            {
+
+                                data:
+                                    valoresGrafico,
+
+                                backgroundColor: [
+                                    "#FFAE17",
+                                    "#31401A",
+                                    "#A1A680",
+                                    "#E6BF5C",
+                                    "#CBBDA0",
+                                    "#261D12"
+                                ],
+
+                                borderWidth: 2,
+
+                                borderColor:
+                                    "#FFFFEA"
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        cutout: "58%",
+
+                        plugins: {
+
+                            legend: {
+
+                                position: "right",
+
+                                labels: {
+                                    boxWidth: 12
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
 
 {% endblock %}

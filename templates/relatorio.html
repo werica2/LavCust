@@ -1,180 +1,249 @@
 {% extends "base.html" %}
 
-{% block title %}
-Relatório - LavCust
-{% endblock %}
-
+{% block title %}Relatório — LavCust{% endblock %}
 
 {% block content %}
 
-<h1>
-    Relatório de custos
-</h1>
+<div class="pagina">
+
+    <div class="pagina-cabecalho">
+
+        <div>
+
+            <h1>Relatório</h1>
+
+            <p>
+                Acompanhe os resultados da sua produção.
+            </p>
+
+        </div>
 
 
-<div class="card destaque">
+        <form method="POST"
+              class="periodo-form">
 
-    <h2>
-        Custo total da produção
-    </h2>
+            <input type="date"
+                   name="data_inicio">
 
-    <p>
-        R$ {{ "%.2f"|format(total) }}
-    </p>
+            <input type="date"
+                   name="data_fim">
 
-</div>
+            <button type="submit"
+                    class="btn-principal">
+                Gerar Relatório
+            </button>
 
-
-<h2>
-    Custos cadastrados
-</h2>
-
-
-{% if custos %}
-
-<div class="tabela-container">
-
-<table>
-
-    <thead>
-
-        <tr>
-
-            <th>Lavoura</th>
-            <th>Categoria</th>
-            <th>Descrição</th>
-            <th>Total</th>
-
-        </tr>
-
-    </thead>
-
-
-    <tbody>
-
-        {% for custo in custos %}
-
-        <tr>
-
-            <td>
-                {{ custo["lavoura"] }}
-            </td>
-
-            <td>
-                {{ custo["categoria"] }}
-            </td>
-
-            <td>
-                {{ custo["descricao"] }}
-            </td>
-
-            <td>
-                R$
-                {{ "%.2f"|format(
-                    custo["quantidade"] * custo["valor"]
-                ) }}
-            </td>
-
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-
-</table>
-
-</div>
-
-{% endif %}
-
-
-<section class="lucro">
-
-    <h2>
-        📈 Estimar lucro ou prejuízo
-    </h2>
-
-    <p>
-        Informe a quantidade produzida e o preço de venda
-        da saca.
-    </p>
-
-
-    <form method="POST">
-
-        <label>
-            Quantidade de sacas produzidas
-        </label>
-
-        <input
-            type="number"
-            name="quantidade_sacas"
-            step="0.01"
-            min="0"
-            required
-        >
-
-
-        <label>
-            Preço de venda por saca (R$)
-        </label>
-
-        <input
-            type="number"
-            name="preco_saca"
-            step="0.01"
-            min="0"
-            required
-        >
-
-
-        <button type="submit">
-            Calcular resultado
-        </button>
-
-    </form>
-
-
-    {% if lucro is not none %}
-
-    <div class="resultado">
-
-        <h3>
-            Receita estimada
-        </h3>
-
-        <p>
-            R$ {{ "%.2f"|format(receita) }}
-        </p>
-
-
-        <h3>
-            Resultado
-        </h3>
-
-        <p>
-            R$ {{ "%.2f"|format(lucro) }}
-        </p>
-
-
-        {% if lucro >= 0 %}
-
-        <strong>
-            ✅ Lucro estimado
-        </strong>
-
-        {% else %}
-
-        <strong>
-            ⚠️ Prejuízo estimado
-        </strong>
-
-        {% endif %}
+        </form>
 
     </div>
 
-    {% endif %}
 
-</section>
+    <section class="relatorio-cards">
+
+        <div class="relatorio-card">
+
+            <span>Total de Despesas</span>
+
+            <strong>
+                R$ {{ "%.2f"|format(total|default(0)) }}
+            </strong>
+
+        </div>
+
+
+        <div class="relatorio-card verde">
+
+            <span>Total de Vendas</span>
+
+            <strong>
+                R$ {{ "%.2f"|format(receita|default(0)) }}
+            </strong>
+
+        </div>
+
+
+        <div class="relatorio-card dourado">
+
+            <span>Lucro Estimado</span>
+
+            <strong>
+                R$ {{ "%.2f"|format(lucro|default(0)) }}
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <div class="graficos-grid">
+
+        <div class="grafico-box">
+
+            <h2>Distribuição dos Custos</h2>
+
+            <div class="pizza-grafico">
+
+                <div class="pizza"></div>
+
+                <div class="legenda-grafico">
+
+                    <div>
+                        <span class="legenda-cor cor-insumos"></span>
+                        Insumos
+                    </div>
+
+                    <div>
+                        <span class="legenda-cor cor-combustivel"></span>
+                        Combustível
+                    </div>
+
+                    <div>
+                        <span class="legenda-cor cor-mao"></span>
+                        Mão de obra
+                    </div>
+
+                    <div>
+                        <span class="legenda-cor cor-outros"></span>
+                        Outros
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="grafico-box">
+
+            <h2>Evolução de Vendas e Despesas</h2>
+
+            <div class="grafico-barras">
+
+                <div class="barra-grupo">
+
+                    <div class="barra venda"
+                         style="height: 80px;">
+                    </div>
+
+                    <div class="barra despesa"
+                         style="height: 55px;">
+                    </div>
+
+                    <span>Set</span>
+
+                </div>
+
+
+                <div class="barra-grupo">
+
+                    <div class="barra venda"
+                         style="height: 105px;">
+                    </div>
+
+                    <div class="barra despesa"
+                         style="height: 70px;">
+                    </div>
+
+                    <span>Out</span>
+
+                </div>
+
+
+                <div class="barra-grupo">
+
+                    <div class="barra venda"
+                         style="height: 70px;">
+                    </div>
+
+                    <div class="barra despesa"
+                         style="height: 95px;">
+                    </div>
+
+                    <span>Nov</span>
+
+                </div>
+
+
+                <div class="barra-grupo">
+
+                    <div class="barra venda"
+                         style="height: 120px;">
+                    </div>
+
+                    <div class="barra despesa"
+                         style="height: 80px;">
+                    </div>
+
+                    <span>Dez</span>
+
+                </div>
+
+            </div>
+
+            <div class="legenda-barras">
+
+                <span>
+                    <i class="venda-legenda"></i>
+                    Vendas
+                </span>
+
+                <span>
+                    <i class="despesa-legenda"></i>
+                    Despesas
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="detalhamento">
+
+        <h2>Detalhamento</h2>
+
+        <div class="detalhes-grid">
+
+            <div>
+                <span>Quantidade de Despesas</span>
+                <strong>
+                    {{ despesas|length if despesas else 0 }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Média de Despesas</span>
+                <strong>
+                    R$ {{ "%.2f"|format(
+                        (total / (despesas|length))
+                        if despesas and (despesas|length) > 0
+                        else 0
+                    ) }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Maior Despesa</span>
+                <strong>
+                    R$
+                    {% if despesas %}
+                        {{ "%.2f"|format(
+                            despesas
+                            |map(attribute='valor')
+                            |max
+                        ) }}
+                    {% else %}
+                        0,00
+                    {% endif %}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}

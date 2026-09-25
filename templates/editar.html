@@ -1,103 +1,510 @@
 {% extends "base.html" %}
 
-{% block title %}
-Editar custo - LavCust
-{% endblock %}
+{% block title %}Início — LavCust{% endblock %}
+
 
 {% block content %}
 
-<div class="form-container">
+<div class="pagina-dashboard">
 
-    <h1>Editar custo</h1>
 
-    <form method="POST">
+    <!-- BANNER -->
 
-        <label>
-            Lavoura
-        </label>
+    <section class="banner-inicial">
 
-        <select name="lavoura" required>
+        <div class="banner-sombra"></div>
 
-            <option value="Soja"
-                {% if custo["lavoura"] == "Soja" %}selected{% endif %}>
-                Soja
-            </option>
 
-            <option value="Milho"
-                {% if custo["lavoura"] == "Milho" %}selected{% endif %}>
-                Milho
-            </option>
+        <div class="banner-conteudo">
 
-        </select>
+            <div class="banner-esquerda">
 
-        <label>
-            Categoria
-        </label>
+                <div class="logo-banner-box">
 
-        <select name="categoria" required>
+                    <img
+                        src="{{ url_for('static', filename='logo.png') }}"
+                        alt="LavCust"
+                    >
 
-            {% for categoria in [
-                "Sementes",
-                "Fertilizantes",
-                "Defensivos",
-                "Combustível",
-                "Máquinas",
-                "Mão de obra",
-                "Outros"
-            ] %}
+                </div>
 
-            <option value="{{ categoria }}"
-                {% if custo["categoria"] == categoria %}
-                    selected
-                {% endif %}>
-                {{ categoria }}
-            </option>
 
-            {% endfor %}
+                <div class="boas-vindas">
 
-        </select>
+                    <h1>
+                        Olá, {{ nome }}!
+                    </h1>
 
-        <label>
-            Descrição
-        </label>
+                    <p>
+                        Seja bem-vindo(a) ao LavCust.
+                        Aqui você pode acompanhar e gerenciar
+                        todos os dados da sua lavoura.
+                    </p>
 
-        <input
-            type="text"
-            name="descricao"
-            value="{{ custo['descricao'] }}"
-            required
-        >
+                </div>
 
-        <label>
-            Quantidade
-        </label>
+            </div>
 
-        <input
-            type="number"
-            name="quantidade"
-            step="0.01"
-            value="{{ custo['quantidade'] }}"
-            required
-        >
 
-        <label>
-            Valor unitário (R$)
-        </label>
+            <div class="data-hoje">
 
-        <input
-            type="number"
-            name="valor"
-            step="0.01"
-            value="{{ custo['valor'] }}"
-            required
-        >
+                <span>Hoje é</span>
 
-        <button type="submit">
-            Salvar alterações
-        </button>
+                <strong id="dataAtual">
+                    Carregando...
+                </strong>
 
-    </form>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESUMO -->
+
+    <section class="cards-resumo">
+
+        <article class="card-resumo">
+
+            <div class="card-icone despesa">
+                R$
+            </div>
+
+            <div>
+                <span>Total de Despesas</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(total_despesas) }}
+                </strong>
+            </div>
+
+        </article>
+
+
+        <article class="card-resumo">
+
+            <div class="card-icone venda">
+                $
+            </div>
+
+            <div>
+                <span>Total de Vendas</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(total_vendas) }}
+                </strong>
+            </div>
+
+        </article>
+
+
+        <article class="card-resumo">
+
+            <div class="card-icone lucro">
+                %
+            </div>
+
+            <div>
+                <span>Lucro Estimado</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(lucro) }}
+                </strong>
+            </div>
+
+        </article>
+
+
+        <article class="card-resumo">
+
+            <div class="card-icone quantidade">
+                #
+            </div>
+
+            <div>
+                <span>Nº de Despesas</span>
+
+                <strong>
+                    {{ qtd_registros }}
+                </strong>
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- ACESSO RÁPIDO -->
+
+    <section class="secao-acesso">
+
+        <h2>Acesso rápido</h2>
+
+
+        <div class="grid-acesso">
+
+            <a
+                href="{{ url_for('cadastro') }}"
+                class="card-acesso"
+            >
+
+                <div class="icone-acesso">
+                    +
+                </div>
+
+                <strong>
+                    Cadastrar Despesas
+                </strong>
+
+                <span>
+                    Adicione novos gastos
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('listar_despesas') }}"
+                class="card-acesso"
+            >
+
+                <div class="icone-acesso">
+                    ▣
+                </div>
+
+                <strong>
+                    Despesas
+                </strong>
+
+                <span>
+                    Veja e gerencie suas despesas
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('cadastrar_venda') }}"
+                class="card-acesso"
+            >
+
+                <div class="icone-acesso">
+                    $
+                </div>
+
+                <strong>
+                    Registrar Venda
+                </strong>
+
+                <span>
+                    Registre suas vendas
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('relatorio') }}"
+                class="card-acesso"
+            >
+
+                <div class="icone-acesso">
+                    ▤
+                </div>
+
+                <strong>
+                    Relatório
+                </strong>
+
+                <span>
+                    Acompanhe seus resultados
+                </span>
+
+            </a>
+
+
+            <div class="card-frase">
+
+                <div class="folha-frase">
+                    🌿
+                </div>
+
+                <strong>
+                    “Planejamento hoje,<br>
+                    colheita amanhã!”
+                </strong>
+
+                <span class="folhas-decoracao">
+                    🌱
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- GRÁFICOS -->
+
+    <section class="secao-graficos">
+
+        <div class="cabecalho-graficos">
+
+            <div>
+                <h2>Visão geral</h2>
+
+                <p>
+                    Acompanhe os resultados da sua produção.
+                </p>
+            </div>
+
+            <a href="{{ url_for('relatorio') }}">
+                Ver relatório
+            </a>
+
+        </div>
+
+
+        <div class="grid-graficos">
+
+
+            <!-- GRÁFICO 1 -->
+
+            <article class="grafico-card">
+
+                <h3>
+                    Despesas x Vendas
+                </h3>
+
+                <div class="grafico-container">
+
+                    <canvas id="graficoComparacao"></canvas>
+
+                </div>
+
+            </article>
+
+
+            <!-- GRÁFICO 2 -->
+
+            <article class="grafico-card">
+
+                <h3>
+                    Distribuição dos Custos
+                </h3>
+
+                <div class="grafico-container">
+
+                    <canvas id="graficoCategorias"></canvas>
+
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- DADOS PARA JS -->
+
+    <div
+        id="dadosDashboard"
+        hidden
+        data-despesas="{{ total_despesas }}"
+        data-vendas="{{ total_vendas }}"
+        data-categorias='{{ categorias | tojson }}'
+        data-valores='{{ valores_categorias | tojson }}'
+    ></div>
+
 
 </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dados =
+        document.getElementById("dadosDashboard");
+
+
+    if (!dados) {
+        return;
+    }
+
+
+    const totalDespesas =
+        Number(dados.dataset.despesas) || 0;
+
+
+    const totalVendas =
+        Number(dados.dataset.vendas) || 0;
+
+
+    let categorias = [];
+    let valores = [];
+
+
+    try {
+
+        categorias =
+            JSON.parse(dados.dataset.categorias);
+
+        valores =
+            JSON.parse(dados.dataset.valores);
+
+    } catch (erro) {
+
+        categorias = [];
+        valores = [];
+
+    }
+
+
+    const comparacao =
+        document.getElementById("graficoComparacao");
+
+
+    if (comparacao) {
+
+        new Chart(comparacao, {
+
+            type: "bar",
+
+            data: {
+
+                labels: [
+                    "Despesas",
+                    "Vendas"
+                ],
+
+                datasets: [
+                    {
+                        data: [
+                            totalDespesas,
+                            totalVendas
+                        ],
+
+                        backgroundColor: [
+                            "#FFAE17",
+                            "#31401A"
+                        ],
+
+                        borderRadius: 7,
+
+                        maxBarThickness: 70
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+                        beginAtZero: true
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+
+    const graficoCategorias =
+        document.getElementById("graficoCategorias");
+
+
+    if (
+        graficoCategorias &&
+        categorias.length > 0
+    ) {
+
+        new Chart(graficoCategorias, {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: categorias,
+
+                datasets: [
+                    {
+                        data: valores,
+
+                        backgroundColor: [
+                            "#FFAE17",
+                            "#31401A",
+                            "#A1A680",
+                            "#E6BF5C",
+                            "#CBBDA0",
+                            "#261D12"
+                        ],
+
+                        borderWidth: 2,
+
+                        borderColor: "#FFFFEA"
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: "58%",
+
+                plugins: {
+
+                    legend: {
+
+                        position: "right",
+
+                        labels: {
+                            boxWidth: 12
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+});
+
+</script>
 
 {% endblock %}

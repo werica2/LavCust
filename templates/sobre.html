@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Sobre — LavCust{% endblock %}
+
+{% block content %}
+
+<div class="sobre-container">
+
+    <div class="sobre-banner">
+
+        <img src="{{ url_for('static', filename='logo.png') }}"
+             alt="LavCust">
+
+        <h1>Sobre o LavCust</h1>
+
+        <p>
+            Controle simples e organizado
+            para sua produção agrícola.
+        </p>
+
+    </div>
+
+
+    <div class="sobre-conteudo">
+
+        <h2>O que é o LavCust?</h2>
+
+        <p>
+            O LavCust é um sistema desenvolvido para
+            auxiliar produtores rurais no controle dos
+            custos de produção de suas lavouras.
+        </p>
+
+        <p>
+            Através do sistema é possível registrar
+            despesas, acompanhar vendas, consultar
+            informações e visualizar relatórios.
+        </p>
+
+
+        <h2>Nossa equipe</h2>
+
+        <div class="equipe">
+
+            <div class="membro">
+                <strong>Werica Paula</strong>
+                <span>Desenvolvimento</span>
+            </div>
+
+            <div class="membro">
+                <strong>Nicoly Lopes</strong>
+                <span>Interface e fluxo</span>
+            </div>
+
+            <div class="membro">
+                <strong>Beatryz dos Santos</strong>
+                <span>Consulta e arquitetura</span>
+            </div>
+
+            <div class="membro">
+                <strong>Maria Eduarda Afonso</strong>
+                <span>Banco de dados</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

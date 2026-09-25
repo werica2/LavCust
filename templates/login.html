@@ -1,159 +1,206 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>LavCust - Login</title>
+{% block title %}Login — LavCust{% endblock %}
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+{% block content %}
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #eef5ed;
-        }
+<section class="login-novo">
 
-        .login-container {
-            width: 380px;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-        }
+    <!-- LADO ESQUERDO -->
+    <div class="login-novo-imagem">
 
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        <div class="login-novo-fundo"></div>
 
-        .logo h1 {
-            font-size: 32px;
-            color: #2e7d32;
-            margin-bottom: 8px;
-        }
+        <div class="login-novo-esquerda">
 
-        .logo p {
-            color: #666;
-            font-size: 14px;
-        }
+            <img
+                src="{{ url_for('static', filename='logo.png') }}"
+                alt="LavCust"
+                class="login-novo-logo"
+            >
 
-        .campo {
-            margin-bottom: 20px;
-        }
+            <div class="login-novo-chamada">
 
-        .campo label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-            color: #333;
-        }
+                <h1>
+                    Lavoura que<br>
+                    gera <span>futuro.</span>
+                </h1>
 
-        .campo input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 15px;
-        }
+                <p>
+                    Organize seus custos e acompanhe<br>
+                    o resultado da sua produção.
+                </p>
 
-        .campo input:focus {
-            outline: none;
-            border-color: #2e7d32;
-        }
-
-        button {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 8px;
-            background: #2e7d32;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #256628;
-        }
-
-        .erro {
-            background: #ffe5e5;
-            color: #b00020;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .rodape {
-            text-align: center;
-            margin-top: 25px;
-            color: #888;
-            font-size: 12px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="login-container">
-
-        <div class="logo">
-            <h1>🌱 LavCust</h1>
-            <p>Controle de custos da produção</p>
-        </div>
-
-        {% if erro %}
-            <div class="erro">
-                {{ erro }}
-            </div>
-        {% endif %}
-
-        <form method="POST" action="/">
-
-            <div class="campo">
-                <label for="usuario">Usuário</label>
-                <input
-                    type="text"
-                    id="usuario"
-                    name="usuario"
-                    placeholder="Digite seu usuário"
-                    required
-                >
             </div>
 
-            <div class="campo">
-                <label for="senha">Senha</label>
-                <input
-                    type="password"
-                    id="senha"
-                    name="senha"
-                    placeholder="Digite sua senha"
-                    required
-                >
+            <div class="login-beneficios">
+
+                <div class="login-beneficio">
+                    <div class="beneficio-icone">🌱</div>
+                    <strong>Mais controle</strong>
+                </div>
+
+                <div class="login-beneficio">
+                    <div class="beneficio-icone">▥</div>
+                    <strong>Melhores decisões</strong>
+                </div>
+
+                <div class="login-beneficio">
+                    <div class="beneficio-icone">＄</div>
+                    <strong>Maior lucro</strong>
+                </div>
+
             </div>
 
-            <button type="submit">
-                Entrar
-            </button>
-
-        </form>
-
-        <div class="rodape">
-            LavCust © 2026
         </div>
 
     </div>
 
-</body>
-</html>
+
+    <!-- LADO DIREITO -->
+    <div class="login-novo-direita">
+
+        <div class="login-novo-formulario">
+
+            <div class="login-seguranca">
+                <span>ACESSO SEGURO</span>
+                <div></div>
+            </div>
+
+            <h2>
+                Bem-vindo de<br>
+                volta
+            </h2>
+
+            <p class="login-descricao">
+                Entre para acompanhar sua lavoura.
+            </p>
+
+
+            {% if erro %}
+            <div class="alerta-erro">
+                {{ erro }}
+            </div>
+            {% endif %}
+
+
+            <form method="POST">
+
+                <!-- EMAIL -->
+                <div class="login-campo">
+
+                    <label for="email">
+                        ✉ &nbsp; E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="seu@email.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- SENHA -->
+                <div class="login-campo">
+
+                    <label for="senha">
+                        🔒 &nbsp; Senha
+                    </label>
+
+                    <div class="login-senha-nova">
+
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Sua senha"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            onclick="mostrarSenhaLogin()"
+                            aria-label="Mostrar senha"
+                            id="botaoOlho"
+                        >
+                            ◉
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="login-esqueci">
+                    <a href="#">
+                        Esqueceu a senha?
+                    </a>
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-botao-entrar"
+                >
+                    ↪ &nbsp; Entrar no LavCust
+                </button>
+
+            </form>
+
+
+            <div class="login-criar-conta">
+
+                <span>
+                    Ainda não tem conta?
+                </span>
+
+                <a href="{{ url_for('cadastro_usuario') }}">
+                    Criar cadastro
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+function mostrarSenhaLogin() {
+
+    const senha =
+        document.getElementById("senha");
+
+    const botao =
+        document.getElementById("botaoOlho");
+
+    if (senha.type === "password") {
+
+        senha.type = "text";
+        botao.textContent = "◉";
+
+    } else {
+
+        senha.type = "password";
+        botao.textContent = "◉";
+
+    }
+
+}
+
+</script>
+
+{% endblock %}
