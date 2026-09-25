@@ -1,160 +1,209 @@
 {% extends "base.html" %}
 
-{% block title %}Cálculos — LavCust{% endblock %}
+{% block title %}Cálculos{% endblock %}
 
 {% block content %}
 
-<div class="pagina">
+<div class="calculos-page">
+    <div>
+        <span class="eyebrow">GESTÃO DA LAVOURA</span>
+        <h1>Cálculos</h1>
+        <p class="muted">
+            Confira seus custos, vendas e resultados de forma rápida.
+        </p>
+    </div>
+</div>
 
-    <div class="pagina-cabecalho">
-
+<!-- FILTROS -->
+<div class="panel">
+    <div class="panel-heading">
         <div>
-
-            <h1>Cálculos</h1>
-
-            <p>
-                Visualize os totais e indicadores da sua produção.
-            </p>
-
+            <span class="eyebrow">FILTROS</span>
+            <h2>Escolha a lavoura</h2>
         </div>
-
     </div>
 
+    <form method="get" class="filters">
 
-    <section class="calculos-cards">
+        <label>
+            Cultivo
+            <select name="culture">
+                <option value="">Todos</option>
 
-        <div class="calculo-card">
+                {% for culture_option in cultures %}
+                    <option value="{{ culture_option }}"
+                        {% if filters.culture == culture_option %}selected{% endif %}>
+                        {% if culture_option == "Milho" %}
+                            🌽 Milho
+                        {% else %}
+                            🌱 Soja
+                        {% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
 
-            <div class="calculo-icone">
-                R$
-            </div>
+        <label>
+            Safra
+            <select name="harvest">
+                <option value="">Todas</option>
 
-            <span>
-                Total de Despesas
-            </span>
+                {% for harvest_option in harvests %}
+                    <option value="{{ harvest_option }}"
+                        {% if filters.harvest == harvest_option %}selected{% endif %}>
+                        {{ harvest_option }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
 
-            <strong>
-                R$ {{ "%.2f"|format(total|default(0)) }}
-            </strong>
+        <button class="btn btn-primary" type="submit">
+            Calcular
+        </button>
 
+    </form>
+</div>
+
+
+<!-- RESUMO -->
+<div class="quick-grid">
+
+    <div class="quick-card">
+        <span>💰 Total de custos</span>
+        <b>R$ {{ "%.2f"|format(totals.expenses)|replace(".", ",") }}</b>
+        <small>Total das despesas cadastradas</small>
+    </div>
+
+    <div class="quick-card">
+        <span>🧾 Total de vendas</span>
+        <b>R$ {{ "%.2f"|format(totals.sales)|replace(".", ",") }}</b>
+        <small>Total das vendas registradas</small>
+    </div>
+
+    <div class="quick-card">
+        <span>📈 Lucro</span>
+        <b class="positive">
+            R$ {{ "%.2f"|format(profit)|replace(".", ",") }}
+        </b>
+        <small>Resultado positivo</small>
+    </div>
+
+    <div class="quick-card">
+        <span>📉 Prejuízo</span>
+        <b class="negative">
+            R$ {{ "%.2f"|format(loss)|replace(".", ",") }}
+        </b>
+        <small>Resultado negativo</small>
+    </div>
+
+</div>
+
+
+<!-- ECONOMIA -->
+<div class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="eyebrow">OPORTUNIDADE</span>
+            <h2>💡 Economia possível</h2>
         </div>
+    </div>
 
-
-        <div class="calculo-card">
-
-            <div class="calculo-icone">
-                ▣
-            </div>
-
-            <span>
-                Total de Vendas
-            </span>
-
-            <strong>
-                R$ {{ "%.2f"|format(total_vendas|default(0)) }}
-            </strong>
-
-        </div>
-
-
-        <div class="calculo-card">
-
-            <div class="calculo-icone">
-                %
-            </div>
-
-            <span>
-                Lucro/Prejuízo
-            </span>
-
-            <strong>
-                R$ {{ "%.2f"|format(lucro|default(0)) }}
-            </strong>
-
-        </div>
-
-    </section>
-
-
-    <section class="detalhamento">
-
-        <h2>Detalhamento</h2>
-
-        <div class="detalhes-grid">
-
-            <div>
-
-                <span>
-                    Quantidade de Despesas
-                </span>
-
-                <strong>
-                    {{ quantidade|default(0) }}
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    Média de Despesas
-                </span>
-
-                <strong>
-                    R$ {{ "%.2f"|format(
-                        (total / quantidade)
-                        if quantidade and quantidade > 0
-                        else 0
-                    ) }}
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    Maior Despesa
-                </span>
-
-                <strong>
-                    R$ 0,00
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    Menor Despesa
-                </span>
-
-                <strong>
-                    R$ 0,00
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <div class="mensagem-calculo">
-
+    <div class="calculo-destaque">
         <strong>
-            💡 Dica
+            R$ {{ "%.2f"|format(totals.savings)|replace(".", ",") }}
         </strong>
 
         <p>
-            Acompanhar seus custos regularmente ajuda
-            a entender melhor sua produção e tomar
-            decisões mais organizadas.
+            Valor que poderia ser economizado considerando a diferença
+            entre o valor planejado e o valor realmente gasto.
         </p>
+    </div>
+</div>
+
+
+<!-- CATEGORIAS -->
+<div class="panel">
+
+    <div class="panel-heading">
+        <div>
+            <span class="eyebrow">DETALHAMENTO</span>
+            <h2>🧮 Soma de todas as categorias</h2>
+        </div>
+    </div>
+
+    {% if categories %}
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Total gasto</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for category in categories %}
+
+                <tr>
+
+                    <td>
+                        {% if category.category == "Sementes" %}
+                            🌱
+                        {% elif category.category == "Fertilizantes" %}
+                            🧪
+                        {% elif category.category == "Defensivos" %}
+                            🛡️
+                        {% elif category.category == "Combustível" %}
+                            ⛽
+                        {% elif category.category == "Mão de obra" %}
+                            👷
+                        {% else %}
+                            📦
+                        {% endif %}
+
+                        {{ category.category }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            R$ {{ "%.2f"|format(category.total)|replace(".", ",") }}
+                        </strong>
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <th>TOTAL GERAL</th>
+                    <th>
+                        R$ {{ "%.2f"|format(totals.expenses)|replace(".", ",") }}
+                    </th>
+                </tr>
+            </tfoot>
+
+        </table>
 
     </div>
+
+    {% else %}
+
+    <div class="empty">
+        <div class="empty-icon">🌱</div>
+        <h3>Nenhuma despesa encontrada</h3>
+        <p>
+            Cadastre uma despesa para visualizar os cálculos.
+        </p>
+    </div>
+
+    {% endif %}
 
 </div>
 

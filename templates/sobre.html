@@ -1,71 +1,11 @@
 {% extends "base.html" %}
-
-{% block title %}Sobre — LavCust{% endblock %}
-
+{% block title %}Sobre{% endblock %}
 {% block content %}
-
-<div class="sobre-container">
-
-    <div class="sobre-banner">
-
-        <img src="{{ url_for('static', filename='logo.png') }}"
-             alt="LavCust">
-
-        <h1>Sobre o LavCust</h1>
-
-        <p>
-            Controle simples e organizado
-            para sua produção agrícola.
-        </p>
-
-    </div>
-
-
-    <div class="sobre-conteudo">
-
-        <h2>O que é o LavCust?</h2>
-
-        <p>
-            O LavCust é um sistema desenvolvido para
-            auxiliar produtores rurais no controle dos
-            custos de produção de suas lavouras.
-        </p>
-
-        <p>
-            Através do sistema é possível registrar
-            despesas, acompanhar vendas, consultar
-            informações e visualizar relatórios.
-        </p>
-
-
-        <h2>Nossa equipe</h2>
-
-        <div class="equipe">
-
-            <div class="membro">
-                <strong>Werica Paula</strong>
-                <span>Desenvolvimento</span>
-            </div>
-
-            <div class="membro">
-                <strong>Nicoly Lopes</strong>
-                <span>Interface e fluxo</span>
-            </div>
-
-            <div class="membro">
-                <strong>Beatryz dos Santos</strong>
-                <span>Consulta e arquitetura</span>
-            </div>
-
-            <div class="membro">
-                <strong>Maria Eduarda Afonso</strong>
-                <span>Banco de dados</span>
-            </div>
-
-        </div>
-
-    </div>
-
+<div class="container page narrow">
+  <div class="page-title"><span class="eyebrow">SOBRE O PROJETO</span><h1>LavCust</h1><p>Lavoura que gera futuro.</p></div>
+  <section class="panel about">
+    <img src="{{url_for('static', filename='logo_lavcust.png')}}" alt="LavCust">
+    <div><h2>Gestão para soja e milho</h2><p>O LavCust é um sistema desenvolvido para auxiliar agricultores e produtores rurais no controle dos custos de produção de lavouras de soja e milho.</p><p>A plataforma permite cadastrar despesas, registrar vendas e acompanhar relatórios com gráficos de custos, resultado e possível economia.</p></div>
+  </section>
 </div>
-
 {% endblock %}

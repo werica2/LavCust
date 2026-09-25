@@ -1,894 +1,535 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+import sqlite3
+from pathlib import Path
+from datetime import datetime
+
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "lavcust.db"
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "lavcust-secret-key-change-in-production"
 
-DATABASE = "lavcust.db"
-
-# Necessário para o sistema de login/sessão
-app.secret_key = "lavcust-chave-secreta-2026"
-
-
-# =========================================================
-# BANCO DE DADOS
-# =========================================================
-
-def conectar_banco():
-    conexao = sqlite3.connect(DATABASE)
-    conexao.row_factory = sqlite3.Row
-    return conexao
+CATEGORIES = [
+    "Sementes", "Fertilizantes", "Defensivos",
+    "Combustível", "Mão de obra", "Outros"
+]
+CULTURES = ["Soja", "Milho"]
 
 
-def criar_banco():
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
 
-    conexao = conectar_banco()
 
-    # -----------------------------------------------------
-    # TABELA DE DESPESAS
-    # -----------------------------------------------------
+def init_db():
+    conn = get_db()
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    );
 
-    conexao.execute("""
-        CREATE TABLE IF NOT EXISTS custos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            lavoura TEXT NOT NULL DEFAULT '',
-            categoria TEXT NOT NULL DEFAULT '',
-            descricao TEXT NOT NULL DEFAULT '',
-            quantidade REAL NOT NULL DEFAULT 1,
-            valor REAL NOT NULL DEFAULT 0,
-            data TEXT,
-            safra TEXT
-        )
+    CREATE TABLE IF NOT EXISTS expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        culture TEXT NOT NULL CHECK(culture IN ('Soja','Milho')),
+        harvest TEXT NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT,
+        amount REAL NOT NULL CHECK(amount >= 0),
+        planned_amount REAL NOT NULL DEFAULT 0 CHECK(planned_amount >= 0),
+        expense_date TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS sales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        culture TEXT NOT NULL CHECK(culture IN ('Soja','Milho')),
+        harvest TEXT NOT NULL,
+        quantity REAL NOT NULL CHECK(quantity >= 0),
+        price_per_bag REAL NOT NULL CHECK(price_per_bag >= 0),
+        total REAL NOT NULL CHECK(total >= 0),
+        sale_date TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
     """)
-
-    # -----------------------------------------------------
-    # TABELA DE USUÁRIOS
-    # -----------------------------------------------------
-
-    conexao.execute("""
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            senha TEXT NOT NULL
-        )
-    """)
-
-    # -----------------------------------------------------
-    # TABELA DE VENDAS
-    # -----------------------------------------------------
-
-    conexao.execute("""
-        CREATE TABLE IF NOT EXISTS vendas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            produto TEXT DEFAULT '',
-            quantidade_sacas REAL NOT NULL DEFAULT 0,
-            preco_por_saca REAL NOT NULL DEFAULT 0,
-            data TEXT,
-            comprador TEXT DEFAULT '',
-            observacoes TEXT DEFAULT ''
-        )
-    """)
-
-    # -----------------------------------------------------
-    # VERIFICA COLUNAS ANTIGAS
-    # -----------------------------------------------------
-
-    colunas = [
-        ("lavoura", "TEXT DEFAULT ''"),
-        ("categoria", "TEXT DEFAULT ''"),
-        ("descricao", "TEXT DEFAULT ''"),
-        ("quantidade", "REAL DEFAULT 1"),
-        ("valor", "REAL DEFAULT 0"),
-        ("data", "TEXT"),
-        ("safra", "TEXT")
-    ]
-
-    existentes = [
-        coluna["name"]
-        for coluna in conexao.execute(
-            "PRAGMA table_info(custos)"
-        ).fetchall()
-    ]
-
-    for nome, tipo in colunas:
-
-        if nome not in existentes:
-
-            conexao.execute(
-                f"ALTER TABLE custos ADD COLUMN {nome} {tipo}"
-            )
-
-    conexao.commit()
-    conexao.close()
+    conn.commit()
+    conn.close()
 
 
-# =========================================================
-# FUNÇÕES AUXILIARES
-# =========================================================
-
-def converter_numero(valor, padrao=0):
-
-    if valor is None:
-        return padrao
-
-    valor = str(valor).strip()
-
-    if not valor:
-        return padrao
-
-    try:
-
-        # Se tiver vírgula, consideramos o formato brasileiro
-        if "," in valor:
-            valor = valor.replace(".", "")
-            valor = valor.replace(",", ".")
-
-        return float(valor)
-
-    except ValueError:
-        return padrao
+def login_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Faça login para acessar o sistema.", "warning")
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+    return wrapped
 
 
-def usuario_logado():
-    return session.get("usuario_id") is not None
+def now():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-# =========================================================
-# PÁGINA INICIAL
-# =========================================================
+def current_user():
+    if "user_id" not in session:
+        return None
+    conn = get_db()
+    user = conn.execute("SELECT id, name, email FROM users WHERE id=?", (session["user_id"],)).fetchone()
+    conn.close()
+    return user
+
+
+@app.context_processor
+def inject_globals():
+    return {"current_user": current_user(), "categories": CATEGORIES, "cultures": CULTURES}
+
 
 @app.route("/")
 def index():
+    if "user_id" not in session:
+        return render_template("landing.html")
+    return redirect(url_for("dashboard"))
 
-    # Primeiro acesso: cadastro
-    if "usuario_id" not in session:
-        return redirect(url_for("cadastro_usuario"))
-
-    conexao = conectar_banco()
-
-    # Despesas
-    custos = conexao.execute("""
-        SELECT *
-        FROM custos
-        ORDER BY id DESC
-    """).fetchall()
-
-    # Total de despesas
-    total_despesas = conexao.execute("""
-        SELECT SUM(quantidade * valor) AS total
-        FROM custos
-    """).fetchone()["total"]
-
-    # Total de vendas
-    total_vendas = conexao.execute("""
-        SELECT SUM(
-            quantidade_sacas * preco_por_saca
-        ) AS total
-        FROM vendas
-    """).fetchone()["total"]
-
-    # Quantidade de despesas
-    qtd_registros = conexao.execute("""
-        SELECT COUNT(*) AS quantidade
-        FROM custos
-    """).fetchone()["quantidade"]
-
-    # Valores por categoria
-    dados_categorias = conexao.execute("""
-        SELECT
-            categoria,
-            SUM(quantidade * valor) AS total
-        FROM custos
-        GROUP BY categoria
-        ORDER BY total DESC
-    """).fetchall()
-
-    conexao.close()
-
-    if total_despesas is None:
-        total_despesas = 0
-
-    if total_vendas is None:
-        total_vendas = 0
-
-    lucro = total_vendas - total_despesas
-
-    nome = session.get(
-        "usuario_nome",
-        ""
-    )
-
-    # Preparação dos dados para os gráficos
-    categorias = []
-    valores_categorias = []
-
-    for item in dados_categorias:
-        categorias.append(
-            item["categoria"] or "Outros"
-        )
-
-        valores_categorias.append(
-            item["total"] or 0
-        )
-
-    return render_template(
-        "index.html",
-
-        custos=custos,
-
-        total=total_despesas,
-
-        total_despesas=total_despesas,
-
-        total_vendas=total_vendas,
-
-        lucro=lucro,
-
-        qtd_registros=qtd_registros,
-
-        quantidade=qtd_registros,
-
-        nome=nome,
-
-        categorias=categorias,
-
-        valores_categorias=valores_categorias
-    )
-# =========================================================
-# CADASTRO DE USUÁRIO
-# =========================================================
-
-@app.route("/cadastro-usuario", methods=["GET", "POST"])
-def cadastro_usuario():
-
-    erro = None
-
-    if request.method == "POST":
-
-        nome = request.form.get("nome", "").strip()
-        email = request.form.get("email", "").strip().lower()
-        senha = request.form.get("senha", "")
-        confirmar_senha = request.form.get(
-            "confirmar_senha",
-            ""
-        )
-
-        if not nome or not email or not senha:
-
-            erro = "Preencha todos os campos."
-
-        elif len(senha) < 8:
-
-            erro = "A senha deve ter pelo menos 8 caracteres."
-
-        elif not any(char.isdigit() for char in senha):
-
-            erro = "A senha deve conter pelo menos 1 número."
-
-        elif senha != confirmar_senha:
-
-            erro = "As senhas não coincidem."
-
-        else:
-
-            conexao = conectar_banco()
-
-            usuario_existente = conexao.execute("""
-                SELECT id
-                FROM usuarios
-                WHERE email = ?
-            """, (email,)).fetchone()
-
-            if usuario_existente:
-
-                erro = "Este e-mail já está cadastrado."
-
-                conexao.close()
-
-            else:
-
-                senha_hash = generate_password_hash(senha)
-
-                conexao.execute("""
-                    INSERT INTO usuarios
-                    (nome, email, senha)
-                    VALUES (?, ?, ?)
-                """, (
-                    nome,
-                    email,
-                    senha_hash
-                ))
-
-                conexao.commit()
-                conexao.close()
-
-                return redirect(url_for("login"))
-
-    return render_template(
-        "cadastro_usuario.html",
-        erro=erro
-    )
-
-
-# =========================================================
-# LOGIN
-# =========================================================
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-
-    erro = None
-
-    if request.method == "POST":
-
-        email = request.form.get(
-            "email",
-            ""
-        ).strip().lower()
-
-        senha = request.form.get(
-            "senha",
-            ""
-        )
-
-        conexao = conectar_banco()
-
-        usuario = conexao.execute("""
-            SELECT *
-            FROM usuarios
-            WHERE email = ?
-        """, (email,)).fetchone()
-
-        conexao.close()
-
-        if usuario and check_password_hash(
-            usuario["senha"],
-            senha
-        ):
-
-            session["usuario_id"] = usuario["id"]
-            session["usuario_nome"] = usuario["nome"]
-
-            return redirect(url_for("index"))
-
-        erro = "E-mail ou senha incorretos."
-
-    return render_template(
-        "login.html",
-        erro=erro
-    )
-
-
-# =========================================================
-# LOGOUT
-# =========================================================
-
-@app.route("/logout")
-def logout():
-
-    session.clear()
-
-    return redirect(url_for("login"))
-
-
-# =========================================================
-# CADASTRO DE DESPESA
-# =========================================================
 
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
-
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
     if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+        confirm = request.form.get("confirm_password", "")
 
-        lavoura = request.form.get(
-            "lavoura",
-            ""
-        )
+        if not name or not email or not password:
+            flash("Preencha todos os campos.", "danger")
+            return render_template("cadastro.html")
+        if len(password) < 8 or not any(c.isdigit() for c in password):
+            flash("A senha deve ter pelo menos 8 caracteres e 1 número.", "danger")
+            return render_template("cadastro.html")
+        if password != confirm:
+            flash("As senhas não conferem.", "danger")
+            return render_template("cadastro.html")
 
-        categoria = request.form.get(
-            "categoria",
-            ""
-        )
-
-        descricao = request.form.get(
-            "descricao",
-            ""
-        )
-
-        quantidade = converter_numero(
-            request.form.get("quantidade"),
-            1
-        )
-
-        valor = converter_numero(
-            request.form.get("valor"),
-            0
-        )
-
-        data = request.form.get(
-            "data",
-            ""
-        )
-
-        safra = request.form.get(
-            "safra",
-            ""
-        )
-
-        conexao = conectar_banco()
-
-        conexao.execute("""
-            INSERT INTO custos
-            (
-                lavoura,
-                categoria,
-                descricao,
-                quantidade,
-                valor,
-                data,
-                safra
+        conn = get_db()
+        try:
+            conn.execute(
+                "INSERT INTO users(name,email,password_hash,created_at) VALUES (?,?,?,?)",
+                (name, email, generate_password_hash(password), now())
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-            lavoura,
-            categoria,
-            descricao,
-            quantidade,
-            valor,
-            data,
-            safra
-        ))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            conn.close()
+            flash("Este e-mail já está cadastrado.", "danger")
+            return render_template("cadastro.html")
+        conn.close()
+        flash("Cadastro realizado com sucesso! Agora você já pode entrar no LavCust.", "success")
+        return redirect(url_for("login"))
+    return render_template("cadastro.html")
 
-        conexao.commit()
-        conexao.close()
 
-        return redirect(
-            url_for("listar_despesas")
-        )
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+        conn = get_db()
+        user = conn.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
+        conn.close()
+        if user and check_password_hash(user["password_hash"], password):
+            session["user_id"] = user["id"]
+            flash(f"Bem-vindo, {user['name']}! 🌱", "success")
+            return redirect(url_for("dashboard"))
+        flash("E-mail ou senha incorretos.", "danger")
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Você saiu do LavCust.", "info")
+    return redirect(url_for("login"))
+
+
+@app.route("/esqueci-senha", methods=["GET", "POST"])
+def forgot_password():
+    # Demo segura: não revela se o e-mail existe.
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        conn = get_db()
+        user = conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone()
+        if user:
+            # Em produção, substituir por envio de link/token por e-mail.
+            conn.close()
+            flash("Se o e-mail estiver cadastrado, as instruções de recuperação serão enviadas.", "info")
+            return redirect(url_for("login"))
+        conn.close()
+        flash("Se o e-mail estiver cadastrado, as instruções de recuperação serão enviadas.", "info")
+        return redirect(url_for("login"))
+    return render_template("forgot_password.html")
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    uid = session["user_id"]
+    conn = get_db()
+    totals = conn.execute("""
+        SELECT
+            COALESCE((SELECT SUM(amount) FROM expenses WHERE user_id=?),0) AS expenses,
+            COALESCE((SELECT SUM(total) FROM sales WHERE user_id=?),0) AS sales,
+            COALESCE((SELECT SUM(CASE WHEN planned_amount > amount THEN planned_amount-amount ELSE 0 END)
+                      FROM expenses WHERE user_id=?),0) AS savings
+    """, (uid, uid, uid)).fetchone()
+    recent = conn.execute("""
+        SELECT 'Despesa' AS kind, culture, harvest, amount AS value, expense_date AS date
+        FROM expenses WHERE user_id=?
+        UNION ALL
+        SELECT 'Venda', culture, harvest, total, sale_date
+        FROM sales WHERE user_id=?
+        ORDER BY date DESC LIMIT 6
+    """, (uid, uid)).fetchall()
+    conn.close()
+    expenses = float(totals["expenses"])
+    sales = float(totals["sales"])
+    result = sales - expenses
+    return render_template("dashboard.html", totals=totals, result=result, recent=recent)
+
+
+@app.route("/despesas", methods=["GET"])
+@login_required
+def despesas():
+    uid = session["user_id"]
+    q = request.args.get("q", "").strip()
+    culture = request.args.get("culture", "").strip()
+    harvest = request.args.get("harvest", "").strip()
+    category = request.args.get("category", "").strip()
+
+    sql = "SELECT * FROM expenses WHERE user_id=?"
+    params = [uid]
+    if q:
+        sql += " AND (description LIKE ? OR category LIKE ? OR harvest LIKE ?)"
+        params += [f"%{q}%", f"%{q}%", f"%{q}%"]
+    if culture in CULTURES:
+        sql += " AND culture=?"; params.append(culture)
+    if harvest:
+        sql += " AND harvest=?"; params.append(harvest)
+    if category in CATEGORIES:
+        sql += " AND category=?"; params.append(category)
+    sql += " ORDER BY expense_date DESC, id DESC"
+
+    conn = get_db()
+    rows = conn.execute(sql, params).fetchall()
+    harvests = [r["harvest"] for r in conn.execute(
+        "SELECT DISTINCT harvest FROM expenses WHERE user_id=? ORDER BY harvest DESC", (uid,)
+    ).fetchall()]
+    conn.close()
+    return render_template("despesas.html", expenses=rows, harvests=harvests,
+                           filters={"q": q, "culture": culture, "harvest": harvest, "category": category})
+
+
+@app.route("/despesas/nova", methods=["GET", "POST"])
+@login_required
+def nova_despesa():
+    if request.method == "POST":
+        data = request.form
+        try:
+            amount = float(data.get("amount", "0").replace(",", "."))
+            planned = float(data.get("planned_amount", "0").replace(",", ".") or 0)
+        except ValueError:
+            flash("Informe valores numéricos válidos.", "danger")
+            return render_template("nova_despesa.html")
+        culture = data.get("culture")
+        harvest = data.get("harvest", "").strip()
+        category = data.get("category")
+        expense_date = data.get("expense_date")
+        if culture not in CULTURES or category not in CATEGORIES or not harvest or not expense_date or amount < 0 or planned < 0:
+            flash("Preencha corretamente os campos obrigatórios.", "danger")
+            return render_template("nova_despesa.html")
+        conn = get_db()
+        conn.execute("""
+            INSERT INTO expenses(user_id,culture,harvest,category,description,amount,planned_amount,expense_date,created_at)
+            VALUES (?,?,?,?,?,?,?,?,?)
+        """, (session["user_id"], culture, harvest, category, data.get("description","").strip(),
+              amount, planned, expense_date, now()))
+        conn.commit(); conn.close()
+        flash("Despesa cadastrada com sucesso!", "success")
+        return redirect(url_for("despesas"))
+    return render_template("nova_despesa.html", today=datetime.now().strftime("%Y-%m-%d"))
+
+
+@app.route("/despesas/<int:expense_id>/editar", methods=["GET", "POST"])
+@login_required
+def editar_despesa(expense_id):
+    conn = get_db()
+    row = conn.execute("SELECT * FROM expenses WHERE id=? AND user_id=?", (expense_id, session["user_id"])).fetchone()
+    if not row:
+        conn.close(); flash("Despesa não encontrada.", "danger"); return redirect(url_for("despesas"))
+    if request.method == "POST":
+        data = request.form
+        try:
+            amount = float(data.get("amount","0").replace(",", "."))
+            planned = float(data.get("planned_amount","0").replace(",", ".") or 0)
+        except ValueError:
+            conn.close(); flash("Valores inválidos.", "danger"); return render_template("editar.html", expense=row)
+        conn.execute("""
+            UPDATE expenses SET culture=?,harvest=?,category=?,description=?,amount=?,planned_amount=?,expense_date=?
+            WHERE id=? AND user_id=?
+        """, (data.get("culture"), data.get("harvest","").strip(), data.get("category"),
+              data.get("description","").strip(), amount, planned, data.get("expense_date"),
+              expense_id, session["user_id"]))
+        conn.commit(); conn.close()
+        flash("Despesa atualizada com sucesso!", "success")
+        return redirect(url_for("despesas"))
+    conn.close()
+    return render_template("editar.html", expense=row)
+
+
+@app.post("/despesas/<int:expense_id>/excluir")
+@login_required
+def excluir_despesa(expense_id):
+    conn = get_db()
+    conn.execute("DELETE FROM expenses WHERE id=? AND user_id=?", (expense_id, session["user_id"]))
+    conn.commit(); conn.close()
+    flash("Despesa excluída com sucesso.", "success")
+    return redirect(url_for("despesas"))
+
+
+@app.route("/vendas", methods=["GET"])
+@login_required
+def vendas():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM sales WHERE user_id=? ORDER BY sale_date DESC, id DESC", (session["user_id"],)).fetchall()
+    conn.close()
+    return render_template("vendas.html", sales=rows)
+
+
+@app.route("/vendas/nova", methods=["GET", "POST"])
+@login_required
+def nova_venda():
+    if request.method == "POST":
+        data = request.form
+        try:
+            quantity = float(data.get("quantity","0").replace(",", "."))
+            price = float(data.get("price_per_bag","0").replace(",", "."))
+        except ValueError:
+            flash("Quantidade e preço devem ser numéricos.", "danger")
+            return render_template("nova_venda.html", today=datetime.now().strftime("%Y-%m-%d"))
+        culture = data.get("culture")
+        harvest = data.get("harvest","").strip()
+        sale_date = data.get("sale_date")
+        if culture not in CULTURES or not harvest or not sale_date or quantity <= 0 or price < 0:
+            flash("Preencha corretamente os campos obrigatórios.", "danger")
+            return render_template("nova_venda.html", today=datetime.now().strftime("%Y-%m-%d"))
+        total = quantity * price
+        conn = get_db()
+        conn.execute("""
+            INSERT INTO sales(user_id,culture,harvest,quantity,price_per_bag,total,sale_date,created_at)
+            VALUES (?,?,?,?,?,?,?,?)
+        """, (session["user_id"], culture, harvest, quantity, price, total, sale_date, now()))
+        conn.commit(); conn.close()
+        flash("Venda registrada com sucesso!", "success")
+        return redirect(url_for("vendas"))
+    return render_template("nova_venda.html", today=datetime.now().strftime("%Y-%m-%d"))
+
+
+@app.post("/vendas/<int:sale_id>/excluir")
+@login_required
+def excluir_venda(sale_id):
+    conn = get_db()
+    conn.execute("DELETE FROM sales WHERE id=? AND user_id=?", (sale_id, session["user_id"]))
+    conn.commit(); conn.close()
+    flash("Venda excluída com sucesso.", "success")
+    return redirect(url_for("vendas"))
+
+
+@app.route("/relatorios")
+@login_required
+def relatorios():
+    uid = session["user_id"]
+    culture = request.args.get("culture","").strip()
+    harvest = request.args.get("harvest","").strip()
+
+    conn = get_db()
+    where_e = "user_id=?"; pe = [uid]
+    where_s = "user_id=?"; ps = [uid]
+    if culture in CULTURES:
+        where_e += " AND culture=?"; pe.append(culture)
+        where_s += " AND culture=?"; ps.append(culture)
+    if harvest:
+        where_e += " AND harvest=?"; pe.append(harvest)
+        where_s += " AND harvest=?"; ps.append(harvest)
+
+    totals = conn.execute(f"""
+        SELECT
+          COALESCE((SELECT SUM(amount) FROM expenses WHERE {where_e}),0) expenses,
+          COALESCE((SELECT SUM(total) FROM sales WHERE {where_s}),0) sales,
+          COALESCE((SELECT SUM(CASE WHEN planned_amount > amount THEN planned_amount-amount ELSE 0 END)
+                    FROM expenses WHERE {where_e}),0) savings
+    """, pe + ps + pe).fetchone()
+
+    cats = conn.execute(f"""
+        SELECT category, ROUND(SUM(amount),2) total
+        FROM expenses WHERE {where_e}
+        GROUP BY category ORDER BY total DESC
+    """, pe).fetchall()
+
+    by_culture = conn.execute("""
+        SELECT culture,
+          COALESCE((SELECT SUM(amount) FROM expenses e2 WHERE e2.user_id=? AND e2.culture=e.culture),0) expenses,
+          COALESCE((SELECT SUM(total) FROM sales s2 WHERE s2.user_id=? AND s2.culture=e.culture),0) sales
+        FROM (SELECT DISTINCT culture FROM expenses WHERE user_id=?
+              UNION SELECT DISTINCT culture FROM sales WHERE user_id=?) e
+    """, (uid, uid, uid, uid)).fetchall()
+
+    harvests = [r["harvest"] for r in conn.execute("""
+        SELECT harvest FROM (
+          SELECT DISTINCT harvest FROM expenses WHERE user_id=?
+          UNION SELECT DISTINCT harvest FROM sales WHERE user_id=?
+        ) ORDER BY harvest DESC
+    """, (uid, uid)).fetchall()]
+    conn.close()
+
+    expenses = float(totals["expenses"]); sales = float(totals["sales"])
+    result = sales - expenses
+    return render_template("relatorios.html", totals=totals, result=result, cats=cats,
+                           by_culture=by_culture, harvests=harvests,
+                           filters={"culture": culture, "harvest": harvest})
+
+@app.route("/calculos")
+@login_required
+def calculos():
+    uid = session["user_id"]
+
+    culture = request.args.get("culture", "").strip()
+    harvest = request.args.get("harvest", "").strip()
+
+    conn = get_db()
+
+    # Filtros das despesas
+    where_e = "user_id=?"
+    params_e = [uid]
+
+    # Filtros das vendas
+    where_s = "user_id=?"
+    params_s = [uid]
+
+    if culture in CULTURES:
+        where_e += " AND culture=?"
+        params_e.append(culture)
+
+        where_s += " AND culture=?"
+        params_s.append(culture)
+
+    if harvest:
+        where_e += " AND harvest=?"
+        params_e.append(harvest)
+
+        where_s += " AND harvest=?"
+        params_s.append(harvest)
+
+    # Totais gerais
+    totals = conn.execute(f"""
+        SELECT
+            COALESCE((SELECT SUM(amount)
+                      FROM expenses
+                      WHERE {where_e}), 0) AS expenses,
+
+            COALESCE((SELECT SUM(total)
+                      FROM sales
+                      WHERE {where_s}), 0) AS sales,
+
+            COALESCE((SELECT SUM(
+                CASE
+                    WHEN planned_amount > amount
+                    THEN planned_amount - amount
+                    ELSE 0
+                END)
+                FROM expenses
+                WHERE {where_e}), 0) AS savings
+    """, params_e + params_s + params_e).fetchone()
+
+    # Soma por categoria
+    categories = conn.execute(f"""
+        SELECT
+            category,
+            ROUND(SUM(amount), 2) AS total
+        FROM expenses
+        WHERE {where_e}
+        GROUP BY category
+        ORDER BY total DESC
+    """, params_e).fetchall()
+
+    # Lista de safras disponíveis
+    harvests = [
+        row["harvest"]
+        for row in conn.execute("""
+            SELECT harvest FROM (
+                SELECT DISTINCT harvest
+                FROM expenses
+                WHERE user_id=?
+
+                UNION
+
+                SELECT DISTINCT harvest
+                FROM sales
+                WHERE user_id=?
+            )
+            ORDER BY harvest DESC
+        """, (uid, uid)).fetchall()
+    ]
+
+    conn.close()
+
+    expenses = float(totals["expenses"])
+    sales = float(totals["sales"])
+
+    # Resultado financeiro
+    result = sales - expenses
+
+    # Separar lucro e prejuízo
+    profit = result if result > 0 else 0
+    loss = abs(result) if result < 0 else 0
 
     return render_template(
-        "cadastro.html"
-    )
-
-
-# =========================================================
-# LISTA DE DESPESAS
-# =========================================================
-
-@app.route("/despesas")
-def listar_despesas():
-
-    pesquisa = request.args.get(
-        "pesquisa",
-        ""
-    )
-
-    conexao = conectar_banco()
-
-    custos = conexao.execute("""
-        SELECT *
-        FROM custos
-
-        WHERE descricao LIKE ?
-           OR categoria LIKE ?
-           OR lavoura LIKE ?
-           OR safra LIKE ?
-
-        ORDER BY id DESC
-    """, (
-        f"%{pesquisa}%",
-        f"%{pesquisa}%",
-        f"%{pesquisa}%",
-        f"%{pesquisa}%"
-    )).fetchall()
-
-    conexao.close()
-
-    return render_template(
-        "despesas.html",
-        despesas=custos,
-        custos=custos,
-        pesquisa=pesquisa
-    )
-# Compatibilidade com templates antigos
-app.add_url_rule(
-    "/despesas",
-    endpoint="despesas",
-    view_func=listar_despesas
+    "calculos.html",
+    totals=totals,
+    categories=categories,
+    harvests=harvests,
+    cultures=CULTURES,
+    result=result,
+    profit=profit,
+    loss=loss,
+    filters={
+        "culture": culture,
+        "harvest": harvest
+    }
 )
 
 
-# =========================================================
-# COMPATIBILIDADE COM /custos
-# =========================================================
-
-@app.route("/custos")
-def custos():
-
-    return listar_despesas()
-
-
-# =========================================================
-# EDITAR DESPESA
-# =========================================================
-
-@app.route("/editar/<int:id>", methods=["GET", "POST"])
-def editar(id):
-
-    conexao = conectar_banco()
-
-    custo = conexao.execute("""
-        SELECT *
-        FROM custos
-        WHERE id = ?
-    """, (id,)).fetchone()
-
-    if custo is None:
-
-        conexao.close()
-
-        return "Custo não encontrado!"
-
-    if request.method == "POST":
-
-        lavoura = request.form.get(
-            "lavoura",
-            ""
-        )
-
-        categoria = request.form.get(
-            "categoria",
-            ""
-        )
-
-        descricao = request.form.get(
-            "descricao",
-            ""
-        )
-
-        quantidade = converter_numero(
-            request.form.get("quantidade"),
-            1
-        )
-
-        valor = converter_numero(
-            request.form.get("valor"),
-            0
-        )
-
-        data = request.form.get(
-            "data",
-            ""
-        )
-
-        safra = request.form.get(
-            "safra",
-            ""
-        )
-
-        conexao.execute("""
-            UPDATE custos
-
-            SET
-                lavoura = ?,
-                categoria = ?,
-                descricao = ?,
-                quantidade = ?,
-                valor = ?,
-                data = ?,
-                safra = ?
-
-            WHERE id = ?
-        """, (
-            lavoura,
-            categoria,
-            descricao,
-            quantidade,
-            valor,
-            data,
-            safra,
-            id
-        ))
-
-        conexao.commit()
-        conexao.close()
-
-        return redirect(
-            url_for("listar_despesas")
-        )
-
-    conexao.close()
-
-    return render_template(
-        "editar.html",
-        custo=custo,
-        despesa=custo
-    )
-
-
-# =========================================================
-# EXCLUIR DESPESA
-# =========================================================
-
-@app.route("/excluir/<int:id>")
-def excluir(id):
-
-    conexao = conectar_banco()
-
-    conexao.execute("""
-        DELETE FROM custos
-        WHERE id = ?
-    """, (id,))
-
-    conexao.commit()
-    conexao.close()
-
-    return redirect(
-        url_for("listar_despesas")
-    )
-
-
-# =========================================================
-# REGISTRAR VENDA
-# =========================================================
-
-@app.route("/cadastrar-venda", methods=["GET", "POST"])
-def cadastrar_venda():
-
-    if request.method == "POST":
-
-        produto = request.form.get(
-            "produto",
-            ""
-        )
-
-        quantidade_sacas = converter_numero(
-            request.form.get(
-                "quantidade_sacas"
-            ),
-            0
-        )
-
-        preco_por_saca = converter_numero(
-            request.form.get(
-                "preco_por_saca"
-            ),
-            0
-        )
-
-        data = request.form.get(
-            "data",
-            ""
-        )
-
-        comprador = request.form.get(
-            "comprador",
-            ""
-        )
-
-        observacoes = request.form.get(
-            "observacoes",
-            ""
-        )
-
-        conexao = conectar_banco()
-
-        conexao.execute("""
-            INSERT INTO vendas
-            (
-                produto,
-                quantidade_sacas,
-                preco_por_saca,
-                data,
-                comprador,
-                observacoes
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (
-            produto,
-            quantidade_sacas,
-            preco_por_saca,
-            data,
-            comprador,
-            observacoes
-        ))
-
-        conexao.commit()
-        conexao.close()
-
-        return redirect(
-            url_for("index")
-        )
-
-    return render_template(
-        "cadastrar_venda.html"
-    )
-
-
-# =========================================================
-# RELATÓRIO
-# =========================================================
-
-@app.route("/relatorio", methods=["GET", "POST"])
-def relatorio():
-
-    conexao = conectar_banco()
-
-    custos = conexao.execute("""
-        SELECT *
-        FROM custos
-        ORDER BY lavoura, categoria
-    """).fetchall()
-
-    vendas = conexao.execute("""
-        SELECT *
-        FROM vendas
-        ORDER BY id DESC
-    """).fetchall()
-
-    total_despesas = conexao.execute("""
-        SELECT SUM(quantidade * valor) AS total
-        FROM custos
-    """).fetchone()["total"]
-
-    total_vendas = conexao.execute("""
-        SELECT SUM(
-            quantidade_sacas * preco_por_saca
-        ) AS total
-        FROM vendas
-    """).fetchone()["total"]
-
-    conexao.close()
-
-    if total_despesas is None:
-        total_despesas = 0
-
-    if total_vendas is None:
-        total_vendas = 0
-
-    lucro = total_vendas - total_despesas
-
-    # -----------------------------------------------------
-    # CATEGORIAS PARA O RELATÓRIO
-    # -----------------------------------------------------
-
-    categorias = {}
-
-    for custo in custos:
-
-        categoria = custo["categoria"] or "Outros"
-
-        valor_total = (
-            custo["quantidade"] *
-            custo["valor"]
-        )
-
-        categorias[categoria] = (
-            categorias.get(categoria, 0)
-            + valor_total
-        )
-
-    return render_template(
-        "relatorio.html",
-
-        custos=custos,
-
-        despesas=custos,
-
-        vendas=vendas,
-
-        total=total_despesas,
-
-        total_despesas=total_despesas,
-
-        total_vendas=total_vendas,
-
-        receita=total_vendas,
-
-        lucro=lucro,
-
-        categorias=categorias
-    )
-
-
-# =========================================================
-# CONSULTA
-# =========================================================
-
-@app.route("/consulta")
-def consulta():
-
-    # A antiga página consulta foi incorporada
-    # à página de despesas.
-
-    return redirect(
-        url_for("listar_despesas")
-    )
-
-
-# =========================================================
-# CÁLCULOS
-# =========================================================
-
-@app.route("/calculos")
-def calculos():
-
-    conexao = conectar_banco()
-
-    quantidade = conexao.execute("""
-        SELECT COUNT(*) AS quantidade
-        FROM custos
-    """).fetchone()["quantidade"]
-
-    total = conexao.execute("""
-        SELECT SUM(
-            quantidade * valor
-        ) AS total
-        FROM custos
-    """).fetchone()["total"]
-
-    total_vendas = conexao.execute("""
-        SELECT SUM(
-            quantidade_sacas * preco_por_saca
-        ) AS total
-        FROM vendas
-    """).fetchone()["total"]
-
-    conexao.close()
-
-    if total is None:
-        total = 0
-
-    if total_vendas is None:
-        total_vendas = 0
-
-    lucro = total_vendas - total
-
-    despesas = quantidade > 0
-
-    media = 0
-
-    if quantidade > 0:
-        media = total / quantidade
-
-    return render_template(
-        "calculos.html",
-
-        despesas=despesas,
-
-        quantidade=quantidade,
-
-        total=total,
-
-        total_vendas=total_vendas,
-
-        lucro=lucro,
-
-        media=media
-    )
-
-
-# =========================================================
-# SOBRE
-# =========================================================
-
 @app.route("/sobre")
 def sobre():
-
-    return render_template(
-        "sobre.html"
-    )
+    return render_template("sobre.html")
 
 
-# =========================================================
-# INICIALIZAÇÃO
-# =========================================================
+@app.errorhandler(404)
+def not_found(_):
+    return render_template("404.html"), 404
+
 
 if __name__ == "__main__":
-
-    criar_banco()
-
-    app.run(
-        debug=True
-    )
+    init_db()
+    app.run(debug=True)

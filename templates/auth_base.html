@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-visual">
+    <img src="{{ url_for('static', filename='logo_lavcust.png') }}" alt="Logo LavCust">
+   
+  </div>
+  <div class="auth-card">
+    {% block auth_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

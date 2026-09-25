@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Relatórios{% endblock %}
+{% block content %}
+<div class="container page">
+  <div class="page-title-row"><div><span class="eyebrow">ANÁLISE DA PRODUÇÃO</span><h1>Relatórios</h1><p>Entenda seus custos e resultados com gráficos claros.</p></div></div>
+  <form class="filters panel" method="get">
+    <select name="culture"><option value="">Todas as culturas</option>{% for c in cultures %}<option value="{{c}}" {% if filters.culture==c %}selected{% endif %}>{{c}}</option>{% endfor %}</select>
+    <select name="harvest"><option value="">Todas as safras</option>{% for h in harvests %}<option {% if filters.harvest==h %}selected{% endif %}>{{h}}</option>{% endfor %}</select>
+    <button class="btn btn-primary">Atualizar relatório</button>
+  </form>
+
+  <section class="stat-grid report-stats">
+    <article class="stat-card"><span>Despesas</span><strong>R$ {{ "%.2f"|format(totals.expenses) }}</strong></article>
+    <article class="stat-card"><span>Vendas</span><strong>R$ {{ "%.2f"|format(totals.sales) }}</strong></article>
+    <article class="stat-card"><span>{{ "Lucro" if result >= 0 else "Prejuízo" }}</span><strong class="{{'positive' if result>=0 else 'negative'}}">R$ {{ "%.2f"|format(result|abs) }}</strong></article>
+    <article class="stat-card"><span>Possível economia</span><strong>R$ {{ "%.2f"|format(totals.savings) }}</strong></article>
+  </section>
+
+  <section class="chart-grid">
+    <article class="panel chart-card"><div class="panel-heading"><div><span class="eyebrow">CUSTOS</span><h2>Despesas por categoria</h2></div></div><div class="chart-box"><canvas id="categoryChart"></canvas></div></article>
+    <article class="panel chart-card"><div class="panel-heading"><div><span class="eyebrow">RESULTADO</span><h2>Vendas x Despesas</h2></div></div><div class="chart-box"><canvas id="resultChart"></canvas></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading"><div><span class="eyebrow">COMPARATIVO</span><h2>Por cultura</h2></div></div>
+    <div class="culture-report-grid">
+      {% for row in by_culture %}
+      {% set res = row['sales'] - row['expenses'] %}
+      <article class="culture-report"><h3>{{ '🌽' if row['culture']=='Milho' else '🌱' }} {{row['culture']}}</h3><p>Despesas <strong>R$ {{ "%.2f"|format(row['expenses']) }}</strong></p><p>Vendas <strong>R$ {{ "%.2f"|format(row['sales']) }}</strong></p><p>Resultado <strong class="{{'positive' if res>=0 else 'negative'}}">R$ {{ "%.2f"|format(res|abs) }} {{'de lucro' if res>=0 else 'de prejuízo'}}</strong></p></article>
+      {% else %}<div class="empty">Cadastre despesas ou vendas para gerar o comparativo.</div>{% endfor %}
+    </div>
+  </section>
+  <div class="report-note">💡 <strong>Possível economia:</strong> calculada a partir da diferença positiva entre o valor previsto e o valor efetivamente gasto informado em cada despesa.</div>
+</div>
+{% endblock %}
+{% block scripts %}
+
+<script>
+    const labels = {{ cats | map(attribute='category') | list | tojson }};
+    const values = {{ cats | map(attribute='total') | list | tojson }};
+
+    const totalVendas = {{ totals['sales'] | tojson }};
+    const totalDespesas = {{ totals['expenses'] | tojson }};
+
+    const categoryCanvas = document.getElementById('categoryChart');
+
+    if (categoryCanvas) {
+        new Chart(categoryCanvas, {
+            type: 'doughnut',
+
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+
+    const resultCanvas = document.getElementById('resultChart');
+
+    if (resultCanvas) {
+        new Chart(resultCanvas, {
+            type: 'bar',
+
+            data: {
+                labels: ['Vendas', 'Despesas'],
+
+                datasets: [{
+                    label: 'R$',
+                    data: [
+                        totalVendas,
+                        totalDespesas
+                    ]
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

@@ -1,162 +1,33 @@
 {% extends "base.html" %}
-
-{% block title %}Despesas — LavCust{% endblock %}
-
+{% block title %}Despesas{% endblock %}
 {% block content %}
+<div class="container page">
+  <div class="page-title-row"><div><span class="eyebrow">CUSTOS DA PRODUÇÃO</span><h1>Despesas</h1><p>Consulte, filtre, edite ou exclua seus registros.</p></div><a class="btn btn-gold" href="{{ url_for('nova_despesa') }}">+ Nova despesa</a></div>
+  <form class="filters panel" method="get">
+    <input name="q" value="{{ filters.q }}" placeholder="Pesquisar...">
+    <select name="culture"><option value="">Todas as culturas</option>{% for c in cultures %}<option value="{{c}}" {% if filters.culture==c %}selected{% endif %}>{{c}}</option>{% endfor %}</select>
+    <select name="harvest"><option value="">Todas as safras</option>{% for h in harvests %}<option {% if filters.harvest==h %}selected{% endif %}>{{h}}</option>{% endfor %}</select>
+    <select name="category"><option value="">Todas as categorias</option>{% for c in categories %}<option value="{{c}}" {% if filters.category==c %}selected{% endif %}>{{c}}</option>{% endfor %}</select>
+    <button class="btn btn-primary" type="submit">Filtrar</button>
+  </form>
 
-<div class="pagina">
-
-    <div class="pagina-cabecalho">
-
-        <div>
-
-            <h1>Despesas</h1>
-
-            <p>
-                Gerencie todas as despesas cadastradas.
-            </p>
-
-        </div>
-
-        <a href="{{ url_for('cadastro') }}"
-           class="btn-principal">
-            + Nova Despesa
-        </a>
-
-    </div>
-
-
-    <div class="filtro">
-
-        <form method="GET"
-              action="{{ url_for('despesas') }}">
-
-            <input
-                type="text"
-                name="pesquisa"
-                value="{{ pesquisa|default('') }}"
-                placeholder="🔍 Buscar por descrição, categoria ou safra...">
-
-            <button type="submit"
-                    class="btn-filtro">
-                Filtrar
-            </button>
-
-        </form>
-
-    </div>
-
-
-    {% if despesas %}
-
-    <div class="tabela-container">
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Data</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Valor (R$)</th>
-                    <th>Ações</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for d in despesas %}
-
-                <tr>
-
-                    <td>
-                        {{ d['data'] }}
-                    </td>
-
-                    <td>
-                        <strong>
-                            {{ d['descricao'] }}
-                        </strong>
-                    </td>
-
-                    <td>
-                        <span class="categoria">
-                            {{ d['categoria'] }}
-                        </span>
-                    </td>
-
-                    <td>
-                        R$ {{ "%.2f"|format(
-                            d['quantidade'] * d['valor']
-                        ) }}
-                    </td>
-
-                    <td class="acoes-tabela">
-
-                        <a href="{{ url_for('editar', id=d['id']) }}"
-                           class="btn-editar"
-                           title="Editar">
-                            ✎
-                        </a>
-
-                        <a href="{{ url_for('excluir', id=d['id']) }}"
-                           class="btn-excluir"
-                           title="Excluir"
-                           onclick="return confirm('Deseja excluir esta despesa?')">
-                            🗑
-                        </a>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-    <div class="total-tabela">
-
-        <strong>
-            Total de despesas:
-        </strong>
-
-        R$ {{ "%.2f"|format(
-            despesas|sum(attribute='valor')
-        ) }}
-
-    </div>
-
-
-    {% else %}
-
-    <div class="vazio">
-
-        <div>🌱</div>
-
-        <h2>
-            Nenhuma despesa encontrada
-        </h2>
-
-        <p>
-            Cadastre sua primeira despesa para começar.
-        </p>
-
-        <a href="{{ url_for('cadastro') }}"
-           class="btn-principal">
-            Cadastrar Despesa
-        </a>
-
-    </div>
-
-    {% endif %}
-
+  <section class="panel">
+  {% if expenses %}
+    <div class="table-wrap"><table><thead><tr><th>Cultura</th><th>Safra</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Data</th><th>Ações</th></tr></thead><tbody>
+    {% for e in expenses %}
+      <tr>
+        <td><span class="culture-pill {{ e['culture'].lower() }}">{{ '🌽' if e['culture']=='Milho' else '🌱' }} {{ e['culture'] }}</span></td>
+        <td>{{ e['harvest'] }}</td><td>{{ e['category'] }}</td><td>{{ e['description'] or '—' }}</td>
+        <td><strong>R$ {{ "%.2f"|format(e['amount']) }}</strong></td><td>{{ e['expense_date'] }}</td>
+        <td class="actions"><a href="{{ url_for('editar_despesa', expense_id=e['id']) }}">Editar</a>
+          <form method="post" action="{{ url_for('excluir_despesa', expense_id=e['id']) }}" onsubmit="return confirmDelete(this,'esta despesa')"><button>Excluir</button></form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% else %}
+    <div class="empty"><div class="empty-icon">🌾</div><h3>Nenhuma despesa encontrada</h3><p>Comece adicionando os custos da sua lavoura.</p><a class="btn btn-primary" href="{{ url_for('nova_despesa') }}">Cadastrar primeira despesa</a></div>
+  {% endif %}
+  </section>
 </div>
-
 {% endblock %}

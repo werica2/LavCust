@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Vendas{% endblock %}
+{% block content %}
+<div class="container page">
+  <div class="page-title-row"><div><span class="eyebrow">RECEITAS DA PRODUÇÃO</span><h1>Vendas</h1><p>Registre e acompanhe o que foi vendido em cada safra.</p></div><a class="btn btn-gold" href="{{ url_for('nova_venda') }}">+ Registrar venda</a></div>
+  <section class="panel">
+  {% if sales %}
+  <div class="table-wrap"><table><thead><tr><th>Cultura</th><th>Safra</th><th>Sacas</th><th>Preço/saca</th><th>Total</th><th>Data</th><th>Ações</th></tr></thead><tbody>
+  {% for s in sales %}<tr>
+    <td><span class="culture-pill {{s['culture'].lower()}}">{{'🌽' if s['culture']=='Milho' else '🌱'}} {{s['culture']}}</span></td>
+    <td>{{s['harvest']}}</td><td>{{"%.2f"|format(s['quantity'])}}</td><td>R$ {{"%.2f"|format(s['price_per_bag'])}}</td><td><strong>R$ {{"%.2f"|format(s['total'])}}</strong></td><td>{{s['sale_date']}}</td>
+    <td class="actions"><form method="post" action="{{url_for('excluir_venda', sale_id=s['id'])}}" onsubmit="return confirmDelete(this,'esta venda')"><button>Excluir</button></form></td>
+  </tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty"><div class="empty-icon">💰</div><h3>Nenhuma venda registrada</h3><p>Registre uma venda para começar a acompanhar suas receitas.</p><a class="btn btn-primary" href="{{url_for('nova_venda')}}">Registrar venda</a></div>{% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+{% block content %}
+<section class="hero-public">
+  <div class="hero-copy">
+    <span class="eyebrow">TECNOLOGIA PARA O AGRONEGÓCIO</span>
+    <h1>Controle sua lavoura com mais <span>clareza e precisão.</span></h1>
+    <p>O LavCust ajuda produtores de soja e milho a organizar despesas, registrar vendas e acompanhar o resultado de cada safra.</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold" href="{{ url_for('cadastro') }}">Começar agora</a>
+      <a class="btn btn-outline" href="{{ url_for('login') }}">Já tenho conta</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <img src="{{ url_for('static', filename='logo_lavcust.png') }}" alt="LavCust">
+    <strong>Lavoura que gera futuro</strong>
+    <small>Gestão agrícola em um só lugar.</small>
+  </div>
+</section>
+<section class="container feature-grid">
+  <article class="feature"><div class="feature-icon">🌾</div><h3>Custos organizados</h3><p>Registre sementes, fertilizantes, defensivos, combustível, mão de obra e outros gastos.</p></article>
+  <article class="feature"><div class="feature-icon">📊</div><h3>Relatórios visuais</h3><p>Veja gráficos, vendas, despesas, lucro, prejuízo e possibilidade de economia.</p></article>
+  <article class="feature"><div class="feature-icon">🌱</div><h3>Soja e Milho</h3><p>Identifique cada registro por cultura e acompanhe diferentes safras.</p></article>
+</section>
+{% endblock %}

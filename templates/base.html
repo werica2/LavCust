@@ -1,222 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>{% block title %}LavCust{% endblock %}</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LavCust{% endblock %} | Lavoura que gera futuro</title>
+  <meta name="description" content="LavCust — gestão de custos para produtores de soja e milho.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='logo_lavcust.png') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-
-<header class="topo">
-
-    <a href="{{ url_for('index') }}" class="marca">
-        <img
-            src="{{ url_for('static', filename='logo.png') }}"
-            alt="LavCust"
-            class="logo-topo"
-        >
-    </a>
-
-
-    {% if session.usuario_id %}
-
-    <nav class="menu-desktop">
-
-        <a href="{{ url_for('index') }}">Início</a>
-
-        <a href="{{ url_for('cadastro') }}">
-            Cadastrar Despesas
-        </a>
-
-        <a href="{{ url_for('listar_despesas') }}">
-            Despesas
-        </a>
-
-        <a href="{{ url_for('cadastrar_venda') }}">
-            Registrar Venda
-        </a>
-
-        <a href="{{ url_for('relatorio') }}">
-            Relatório
-        </a>
-
-        <a href="{{ url_for('calculos') }}">
-            Cálculos
-        </a>
-
-        <a href="{{ url_for('sobre') }}">
-            Sobre
-        </a>
-
-    </nav>
-
-
-    <div class="topo-direita">
-
-        <button
-            type="button"
-            class="botao-perfil"
-            onclick="abrirMenu()"
-        >
-            ♙
-            <span>Perfil</span>
-            ☰
-        </button>
-
-        <a
-            href="{{ url_for('logout') }}"
-            class="botao-sair-topo"
-        >
-            Sair ↪
-        </a>
-
-    </div>
-
-
-    <button
-        type="button"
-        class="botao-menu-mobile"
-        onclick="abrirMenu()"
-        aria-label="Abrir menu"
-    >
-        ☰
-    </button>
-
-
-    {% else %}
-
-    <nav class="menu-desktop menu-publico">
-
-        <a href="{{ url_for('cadastro_usuario') }}">
-            Criar conta
-        </a>
-
-        <a href="{{ url_for('login') }}">
-            Entrar
-        </a>
-
-    </nav>
-
-    {% endif %}
-
+<header class="topbar">
+  <a class="brand" href="{{ url_for('index') }}">
+    <img src="{{ url_for('static', filename='logo_lavcust.png') }}" alt="Logo LavCust">
+    <span>Lav<span>Cust</span></span>
+  </a>
+  {% if current_user %}
+  <button class="mobile-menu" onclick="document.querySelector('.nav').classList.toggle('open')">☰</button>
+  <nav class="nav">
+    <a href="{{ url_for('dashboard') }}">Início</a>
+    <a href="{{ url_for('nova_despesa') }}">Cadastrar despesa</a>
+    <a href="{{ url_for('despesas') }}">Despesas</a>
+    <a href="{{ url_for('nova_venda') }}">Registrar venda</a>
+    <a href="{{ url_for('vendas') }}">Vendas</a>
+    <a href="{{ url_for('calculos') }}">Cálculos</a>
+    <a href="{{ url_for('relatorios') }}">Relatórios</a>
+    <a href="{{ url_for('sobre') }}">Sobre</a>
+  </nav>
+  <div class="user-area">
+    <span class="user-name">Olá, {{ current_user['name'].split()[0] }}</span>
+    <a class="btn btn-outline small" href="{{ url_for('logout') }}">Sair</a>
+  </div>
+  {% else %}
+  <nav class="nav public-nav">
+    <a href="{{ url_for('sobre') }}">Sobre</a>
+    <a class="btn btn-outline small" href="{{ url_for('login') }}">Entrar</a>
+    <a class="btn btn-gold small" href="{{ url_for('cadastro') }}">Criar conta</a>
+  </nav>
+  {% endif %}
 </header>
 
-
-{% if session.usuario_id %}
-
-<div
-    id="menuOverlay"
-    class="menu-overlay"
-    onclick="fecharMenu()"
-></div>
-
-
-<aside id="menuLateral" class="menu-lateral">
-
-    <div class="menu-lateral-topo">
-
-        <img
-            src="{{ url_for('static', filename='logo.png') }}"
-            alt="LavCust"
-        >
-
-        <button
-            type="button"
-            onclick="fecharMenu()"
-        >
-            ×
-        </button>
-
+<main>
+  {% if current_user and request.endpoint not in ['login','cadastro'] %}
+    <div class="banner-wrap">
+      <img class="site-banner" src="{{ url_for('static', filename='banner_lavcust.png') }}" alt="Lavoura de soja e milho — LavCust">
     </div>
+  {% endif %}
 
+  <div class="container flash-area">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+  </div>
 
-    <div class="perfil-menu">
-
-        <strong>
-            {{ session.usuario_nome }}
-        </strong>
-
-        <span>
-            Usuário LavCust
-        </span>
-
-    </div>
-
-
-    <nav class="menu-lateral-links">
-
-        <a href="{{ url_for('index') }}">
-            <span>⌂</span>
-            Início
-        </a>
-
-        <a href="{{ url_for('cadastro') }}">
-            <span>⊕</span>
-            Cadastrar Despesas
-        </a>
-
-        <a href="{{ url_for('listar_despesas') }}">
-            <span>▣</span>
-            Despesas
-        </a>
-
-        <a href="{{ url_for('cadastrar_venda') }}">
-            <span>▤</span>
-            Registrar Venda
-        </a>
-
-        <a href="{{ url_for('relatorio') }}">
-            <span>◉</span>
-            Relatório
-        </a>
-
-        <a href="{{ url_for('calculos') }}">
-            <span>◫</span>
-            Cálculos
-        </a>
-
-        <a href="{{ url_for('sobre') }}">
-            <span>ⓘ</span>
-            Sobre
-        </a>
-
-    </nav>
-
-
-    <a
-        href="{{ url_for('logout') }}"
-        class="sair-menu"
-    >
-        ↪ Sair
-    </a>
-
-</aside>
-
-{% endif %}
-
-
-<main class="conteudo-principal">
-
-    {% block content %}{% endblock %}
-
+  {% block content %}{% endblock %}
 </main>
 
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-
+<footer class="footer">
+  <div><strong>LavCust</strong> · Lavoura que gera futuro.</div>
+  <div>Gestão simples para uma produção mais organizada.</div>
+</footer>
+<script>
+  function confirmDelete(form, label) {
+    return confirm(`Tem certeza que deseja excluir ${label}?\\n\\nEssa ação não poderá ser desfeita.`);
+  }
+  function formatMoney(value) {
+    return Number(value || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  }
+</script>
 {% block scripts %}{% endblock %}
-
 </body>
 </html>

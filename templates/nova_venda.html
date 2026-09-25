@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Registrar venda{% endblock %}
+{% block content %}
+<div class="container page narrow">
+    <div class="page-title"><span class="eyebrow">RECEITA DA PRODUÇÃO</span>
+        <h1>Registrar venda</h1>
+        <p>Informe a quantidade comercializada e o preço por saca.</p>
+    </div>
+    <form method="post" class="panel form-grid two">
+        <label>Cultura *<select name="culture" required>
+                <option value="">Selecione</option>{% for c in cultures %}<option>{{c}}</option>{% endfor %}
+            </select></label>
+        <label>Safra *<input name="harvest" required placeholder="Ex.: 2026/2027"></label>
+        <label>Quantidade de sacas *<input id="quantity" type="number" name="quantity" min="0.01" step="0.01" required
+                placeholder="0"></label>
+        <label>Preço por saca (R$) *<input id="price" type="number" name="price_per_bag" min="0" step="0.01" required
+                placeholder="0,00"></label>
+        <label>Data *<input type="date" name="sale_date" value="{{today}}" required></label>
+        <div class="sale-preview"><span>Total da venda</span><strong id="sale-total">R$ 0,00</strong></div>
+        <div class="form-actions full-row"><a class="btn btn-outline" href="{{url_for('vendas')}}">Cancelar</a><button
+                class="btn btn-primary">Registrar venda</button></div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    const q = document.getElementById('quantity'), p = document.getElementById('price'), t = document.getElementById('sale-total');
+    function calc() { t.textContent = (Number(q.value || 0) * Number(p.value || 0)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+    q.addEventListener('input', calc); p.addEventListener('input', calc);
+</script>
+{% endblock %}

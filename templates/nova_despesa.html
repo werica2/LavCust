@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Cadastrar despesa{% endblock %}
+{% block content %}
+<div class="container page narrow">
+  <div class="page-title"><span class="eyebrow">CONTROLE DE CUSTOS</span><h1>Nova despesa</h1><p>Registre exatamente onde o dinheiro da lavoura está sendo utilizado.</p></div>
+  <form method="post" class="panel form-grid two">
+    <label>Cultura *<select name="culture" required><option value="">Selecione</option>{% for c in cultures %}<option>{{ c }}</option>{% endfor %}</select></label>
+    <label>Safra *<input name="harvest" required placeholder="Ex.: 2026/2027"></label>
+    <label>Categoria *<select name="category" required><option value="">Selecione</option>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></label>
+    <label>Data *<input type="date" name="expense_date" value="{{ today }}" required></label>
+    <label>Valor gasto (R$) *<input type="number" name="amount" step="0.01" min="0" required placeholder="0,00"></label>
+    <label>Valor previsto (R$)<input type="number" name="planned_amount" step="0.01" min="0" placeholder="Usado para estimar economia"></label>
+    <label class="full-row">Descrição<textarea name="description" rows="4" placeholder="Ex.: 20 sacas de sementes para talhão 03"></textarea></label>
+    <div class="form-note full-row">💡 Se você informar o <strong>valor previsto</strong>, o relatório poderá mostrar quanto poderia ter sido economizado quando o gasto ficar abaixo do previsto.</div>
+    <div class="form-actions full-row"><a class="btn btn-outline" href="{{ url_for('despesas') }}">Cancelar</a><button class="btn btn-primary" type="submit">Salvar despesa</button></div>
+  </form>
+</div>
+{% endblock %}

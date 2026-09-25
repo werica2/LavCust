@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+{% block content %}
+<div class="container page">
+  <section class="welcome">
+    <div><span class="eyebrow">PAINEL DE CONTROLE</span><h1>Seja bem-vindo, {{ current_user['name'].split()[0] }}! 🌱</h1><p>Acompanhe os números da sua produção de forma simples e organizada.</p></div>
+    <a class="btn btn-gold" href="{{ url_for('nova_despesa') }}">+ Cadastrar despesa</a>
+  </section>
+
+  <section class="stat-grid">
+    <article class="stat-card"><span>Total de despesas</span><strong>{{ "R$ {:,.2f}".format(totals['expenses']).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>Custos registrados</small></article>
+    <article class="stat-card"><span>Total de vendas</span><strong>{{ "R$ {:,.2f}".format(totals['sales']).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>Receitas registradas</small></article>
+    <article class="stat-card"><span>Resultado</span><strong class="{{ 'positive' if result >= 0 else 'negative' }}">{{ "R$ {:,.2f}".format(result|abs).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>{{ "Lucro" if result >= 0 else "Prejuízo" }}</small></article>
+    <article class="stat-card"><span>Possível economia</span><strong>{{ "R$ {:,.2f}".format(totals['savings']).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>Com base no valor previsto informado</small></article>
+  </section>
+
+  <section class="quick-grid">
+    <a href="{{ url_for('nova_despesa') }}" class="quick-card"><b>💰</b><span>Cadastrar despesa</span><small>Registre os custos da lavoura</small></a>
+    <a href="{{ url_for('despesas') }}" class="quick-card"><b>📋</b><span>Ver despesas</span><small>Pesquise e organize registros</small></a>
+    <a href="{{ url_for('nova_venda') }}" class="quick-card"><b>🌽</b><span>Registrar venda</span><small>Informe sacas e preço</small></a>
+    <a href="{{ url_for('relatorios') }}" class="quick-card"><b>📊</b><span>Relatórios</span><small>Veja gráficos e resultados</small></a>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading"><div><span class="eyebrow">MOVIMENTAÇÕES</span><h2>Atividade recente</h2></div><a href="{{ url_for('despesas') }}">Ver despesas →</a></div>
+    {% if recent %}
+    <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Cultura</th><th>Safra</th><th>Valor</th><th>Data</th></tr></thead><tbody>
+      {% for row in recent %}
+      <tr><td><span class="badge {{ 'sale' if row['kind']=='Venda' else 'expense' }}">{{ row['kind'] }}</span></td><td>{{ '🌽' if row['culture']=='Milho' else '🌱' }} {{ row['culture'] }}</td><td>{{ row['harvest'] }}</td><td>R$ {{ "%.2f"|format(row['value']) }}</td><td>{{ row['date']|replace('-','/') }}</td></tr>
+      {% endfor %}
+    </tbody></table></div>
+    {% else %}
+      <div class="empty">Ainda não há movimentações. Cadastre sua primeira despesa ou venda.</div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
