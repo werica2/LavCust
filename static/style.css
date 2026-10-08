@@ -2397,7 +2397,53 @@ body > footer {
     background: #ffb310;
     flex-shrink: 0;
 }
+/* CABEÇALHO VERDE - TODAS AS PÁGINAS */
 
+.topbar {
+    background: #052e1b !important;
+    border-bottom: 1px solid rgba(255,255,255,0.15) !important;
+}
+
+/* Nome LavCust */
+.topbar .brand,
+.topbar .brand > span {
+    color: #ffffff !important;
+}
+
+/* Mantém Cust em amarelo */
+.topbar .brand > span > span {
+    color: #ffad08 !important;
+}
+
+/* Links do menu */
+.topbar .nav a:not(.btn),
+.topbar .user-name {
+    color: #ffffff !important;
+}
+
+/* Botão Entrar */
+.topbar .btn-outline {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid #ffffff !important;
+}
+
+/* Botão Criar conta */
+.topbar .btn-gold {
+    background: #ffad08 !important;
+    color: #092b18 !important;
+    border: 1px solid #ffad08 !important;
+}
+
+/* Efeito ao passar o mouse */
+.topbar .nav a:hover {
+    opacity: 0.85;
+}
+
+/* Menu para celular */
+.topbar .mobile-menu {
+    color: #ffffff !important;
+}
 
 
 
