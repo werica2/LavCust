@@ -58,10 +58,58 @@
   {% block content %}{% endblock %}
 </main>
 
-<footer class="footer">
-  <div><strong>LavCust</strong> · Lavoura que gera futuro.</div>
-  <div>Gestão simples para uma produção mais organizada.</div>
+
+<footer class="rodape-lavcust">
+    <div class="rodape-conteudo">
+
+        <div class="rodape-titulo">
+            <span>🌾</span>
+            <strong>Contato</strong>
+        </div>
+
+        <a href="https://wa.me/5569993476107"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="rodape-item">
+            <span class="rodape-icone">☎</span>
+            <span>
+                <strong>(69) 99347-6107</strong>
+                <small>Fale conosco pelo WhatsApp</small>
+            </span>
+        </a>
+
+        <a href="mailto:lavcust@gmail.com" class="rodape-item">
+            <span class="rodape-icone">✉</span>
+            <span>
+                <strong>lavcust@gmail.com</strong>
+                <small>Envie um e-mail</small>
+            </span>
+        </a>
+
+        <div class="rodape-item">
+            <span class="rodape-icone">⌖</span>
+            <span>
+                <strong>Ariquemes - RO</strong>
+                <small>Nossa localização</small>
+            </span>
+        </div>
+
+        <div class="rodape-frase">
+            🌿 Lavoura que gera futuro.
+        </div>
+    </div>
+
+    <div class="rodape-inferior">
+        <span>LavCust © 2026. Todos os direitos reservados.</span>
+
+        <div class="rodape-legal">
+            <span>Política de Privacidade</span>
+            <span class="separador">|</span>
+            <span>Termos de Uso</span>
+        </div>
+    </div>
 </footer>
+
 <script>
   function confirmDelete(form, label) {
     return confirm(`Tem certeza que deseja excluir ${label}?\\n\\nEssa ação não poderá ser desfeita.`);

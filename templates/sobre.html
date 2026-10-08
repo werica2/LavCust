@@ -1,11 +1,68 @@
+
 {% extends "base.html" %}
+
 {% block title %}Sobre{% endblock %}
+
 {% block content %}
-<div class="container page narrow">
-  <div class="page-title"><span class="eyebrow">SOBRE O PROJETO</span><h1>LavCust</h1><p>Lavoura que gera futuro.</p></div>
-  <section class="panel about">
-    <img src="{{url_for('static', filename='logo_lavcust.png')}}" alt="LavCust">
-    <div><h2>Gestão para soja e milho</h2><p>O LavCust é um sistema desenvolvido para auxiliar agricultores e produtores rurais no controle dos custos de produção de lavouras de soja e milho.</p><p>A plataforma permite cadastrar despesas, registrar vendas e acompanhar relatórios com gráficos de custos, resultado e possível economia.</p></div>
-  </section>
-</div>
+
+<section class="sobre-lavcust">
+
+    <div class="sobre-conteudo">
+
+        <div class="sobre-cabecalho">
+
+            <div class="sobre-etiqueta">
+                <span></span>
+                SOBRE O PROJETO
+            </div>
+
+            <h1 class="sobre-titulo">
+                Lav<span>Cust</span>
+            </h1>
+
+            <p class="sobre-subtitulo">
+                Lavoura que gera futuro.
+            </p>
+
+        </div>
+
+        <div class="sobre-cartao">
+
+            <div class="sobre-logo-area">
+                <img
+                    src="{{ url_for('static', filename='logo_lavcust.png') }}"
+                    alt="Logo LavCust"
+                    class="sobre-logo"
+                >
+            </div>
+
+            <div class="sobre-divisor"></div>
+
+            <div class="sobre-texto">
+
+                <h2>Gestão para soja e milho</h2>
+
+                <p>
+                    O <strong>Lav<span class="destaque-dourado">Cust</span></strong>
+                    é um sistema desenvolvido para auxiliar agricultores
+                    e produtores rurais no controle dos custos de produção
+                    de lavouras de soja e milho.
+                </p>
+
+                <p>
+                    A plataforma permite cadastrar despesas, registrar
+                    vendas, acompanhar relatórios completos com gráficos
+                    de custos, resultado e possível economia, contribuindo
+                    para uma gestão mais eficiente, organizada e sustentável
+                    da sua produção.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endblock %}

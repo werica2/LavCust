@@ -2046,44 +2046,371 @@ body > main {
         text-align: center;
     }
 }
-/* FUNDO COM FOLHAS - PÁGINA SOBRE */
+/* =========================================
+   LAVCUST - PÁGINA SOBRE
+========================================= */
 
 .sobre-lavcust {
-    background-color: #fbfaeb;
-
-    background-image: url("/static/fundo_folhas.png");
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    min-height: 650px;
-    padding: 75px 30px 100px;
+    width: 100%;
+    min-height: 700px;
+    padding: 65px 35px 48px;
+    background: #fbfaeb;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
-/* CABEÇALHO VERDE-ESCURO */
 
-.topbar {
+.sobre-conteudo {
+    width: 100%;
+    max-width: 1150px;
+    margin: 0 auto;
+}
+
+/* TÍTULO */
+
+.sobre-cabecalho {
+    margin-bottom: 32px;
+}
+
+.sobre-etiqueta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #07351e;
+    margin-bottom: 18px;
+}
+
+.sobre-etiqueta span {
+    width: 42px;
+    height: 4px;
+    background: #ffb310;
+}
+
+.sobre-titulo {
+    font-size: clamp(58px, 6vw, 94px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+    font-weight: 800;
+    color: #07351e;
+    margin: 0;
+}
+
+.sobre-titulo span,
+.destaque-dourado {
+    color: #ffb310;
+}
+
+.sobre-subtitulo {
+    font-size: 28px;
+    color: #648777;
+    margin-top: 5px;
+}
+
+/* CARTÃO PRINCIPAL */
+
+.sobre-cartao {
+    width: 100%;
+    min-height: 385px;
+    display: flex;
+    align-items: center;
+    gap: 55px;
+    padding: 30px 55px;
+    border: 1px solid #e4e1d3;
+    border-radius: 20px;
+    background: #fffdf5;
+    box-shadow: 0 14px 35px rgba(20, 45, 20, 0.07);
+}
+
+/* LOGO */
+
+.sobre-logo-area {
+    flex: 0 0 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sobre-logo {
+    display: block;
+    width: 290px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* LINHA DOURADA */
+
+.sobre-divisor {
+    flex: 0 0 2px;
+    width: 2px;
+    height: 320px;
+    background: #ffb310;
+}
+
+/* TEXTO */
+
+.sobre-texto {
+    flex: 1;
+    min-width: 0;
+}
+
+.sobre-texto h2 {
+    font-size: 34px;
+    line-height: 1.2;
+    font-weight: 800;
+    color: #07351e;
+    margin: 0 0 22px;
+}
+
+.sobre-texto p {
+    font-size: 19px;
+    line-height: 1.65;
+    color: #3d4a49;
+    margin: 0 0 22px;
+}
+
+.sobre-texto p:last-child {
+    margin-bottom: 0;
+}
+
+.sobre-texto strong {
+    color: #07351e;
+}
+
+/* =========================================
+   RODAPÉ VERDE
+========================================= */
+
+.rodape-lavcust {
+    width: 100%;
+    margin-top: 0;
     background: linear-gradient(
-        90deg,
-        #062b17,
-        #103d23,
-        #062b17
+        110deg,
+        #062d19,
+        #0a3b25,
+        #062d19
     );
-
-    border-bottom: 1px solid rgba(255,255,255,0.12);
+    color: white;
+    flex-shrink: 0;
 }
 
-.topbar .brand,
-.topbar .nav > a:not(.btn),
-.topbar .user-name {
-    color: #ffffff;
+.rodape-conteudo {
+    max-width: 1500px;
+    margin: auto;
+    padding: 23px 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
 }
 
-.topbar .brand > span > span {
-    color: #ffb310;
+.rodape-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    white-space: nowrap;
 }
 
-.topbar .nav > a:not(.btn):hover {
-    color: #ffb310;
+.rodape-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-right: 25px;
+    border-right: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    text-decoration: none;
 }
+
+.rodape-item strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.rodape-item small {
+    display: block;
+    font-size: 12px;
+    margin-top: 4px;
+    color: #b7d7cb;
+}
+
+.rodape-icone {
+    font-size: 27px;
+    color: white;
+}
+
+.rodape-frase {
+    font-size: 14px;
+    font-style: italic;
+    color: #f2f1da;
+    white-space: nowrap;
+}
+
+.rodape-inferior {
+    padding: 19px 5%;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    font-size: 13px;
+}
+
+.rodape-legal {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1000px) {
+
+    .sobre-lavcust {
+        min-height: auto;
+        padding: 55px 25px 75px;
+    }
+
+    .sobre-cartao {
+        gap: 25px;
+        padding: 30px;
+    }
+
+    .sobre-logo-area {
+        flex-basis: 230px;
+    }
+
+    .sobre-logo {
+        width: 220px;
+    }
+
+    .sobre-divisor {
+        height: 270px;
+    }
+
+    .sobre-texto h2 {
+        font-size: 27px;
+    }
+
+    .sobre-texto p {
+        font-size: 16px;
+    }
+
+    .rodape-conteudo {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 700px) {
+
+    .sobre-lavcust {
+        padding: 45px 20px 65px;
+    }
+
+    .sobre-titulo {
+        font-size: 60px;
+    }
+
+    .sobre-subtitulo {
+        font-size: 20px;
+    }
+
+    .sobre-cartao {
+        flex-direction: column;
+        text-align: center;
+        gap: 25px;
+        padding: 30px 22px;
+    }
+
+    .sobre-logo-area {
+        flex-basis: auto;
+    }
+
+    .sobre-logo {
+        width: 200px;
+    }
+
+    .sobre-divisor {
+        width: 75%;
+        height: 2px;
+        flex: 0 0 2px;
+    }
+
+    .sobre-texto h2 {
+        font-size: 25px;
+    }
+
+    .sobre-texto p {
+        font-size: 16px;
+    }
+
+    .rodape-conteudo {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rodape-item {
+        border-right: none;
+    }
+
+    .rodape-inferior {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+html, body {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body > main {
+    flex: 1 0 auto;
+}
+
+body > footer {
+    flex-shrink: 0;
+}
+
+/* CORRIGIR LINHA DUPLA AO LADO DA LOGO */
+
+.sobre-logo-area {
+    border-right: none !important;
+}
+
+.sobre-logo {
+    border-right: none !important;
+}
+
+.sobre-divisor {
+    width: 2px;
+    height: 280px;
+    background: #ffb310;
+    flex-shrink: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
