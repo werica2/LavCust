@@ -1476,3 +1476,614 @@ tr:last-child td {
         padding: 45px 28px !important;
     }
 }
+/* ===== PÁGINA INICIAL LAVCUST ===== */
+
+.hero-public {
+    position: relative;
+    isolation: isolate;
+
+    width: min(1200px, calc(100% - 48px));
+    min-height: 430px;
+    margin: 48px auto 32px;
+    padding: 65px 75px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(0, 20, 8, 0.55) 0%,
+            rgba(0, 20, 8, 0.28) 48%,
+            rgba(0, 20, 8, 0.02) 100%
+        ),
+        url("/static/inicial.jpeg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 24px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Impede que efeitos antigos cubram a fotografia */
+.hero-public::before,
+.hero-public::after {
+    content: none !important;
+}
+
+/* TEXTO DO BANNER */
+
+.hero-public .hero-copy {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    max-width: 670px;
+    background: transparent;
+}
+
+.hero-public .eyebrow {
+    display: block;
+    margin-bottom: 18px;
+    color: #e8f2dc;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.hero-public .hero-copy h1 {
+    color: #ffffff;
+    font-size: clamp(34px, 4vw, 58px);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin: 0 0 20px;
+}
+
+.hero-public .hero-copy h1 span {
+    color: #ffb310;
+}
+
+.hero-public .hero-copy p {
+    color: #ffffff;
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 590px;
+    margin-bottom: 25px;
+}
+
+/* BOTÕES */
+
+.hero-public .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.hero-public .btn-gold {
+    background: #ffb310;
+    color: #172009;
+    border: 1px solid #ffb310;
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.hero-public .btn-outline {
+    background: rgba(0, 0, 0, 0.15);
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* QUADRADO BRANCO COM A LOGO */
+
+.hero-public .hero-card {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 230px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 28px 20px;
+    background: #fffef1;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.hero-public .hero-card img {
+    display: block;
+    width: 115px;
+    height: 115px;
+    object-fit: contain;
+    margin-bottom: 12px;
+}
+
+.hero-public .hero-card strong {
+    color: #203b13;
+    font-size: 16px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.hero-public .hero-card small {
+    color: #394333;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 800px) {
+    .hero-public {
+        width: calc(100% - 32px);
+        padding: 45px 28px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 30px;
+        background-position: 65% center;
+    }
+
+    .hero-public .hero-copy h1 {
+        font-size: clamp(32px, 7vw, 46px);
+    }
+
+    .hero-public .hero-card {
+        flex: initial;
+        width: min(100%, 280px);
+        align-self: center;
+    }
+}
+/* =====================================
+   LAVCUST - PÁGINA SOBRE
+===================================== */
+
+.sobre-lavcust {
+    min-height: 650px;
+    padding: 85px 30px 110px;
+    background: #fbfaeb;
+    position: relative;
+    overflow: hidden;
+}
+
+.sobre-conteudo {
+    max-width: 1120px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.sobre-etiqueta {
+    color: #25462d;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    display: block;
+    margin-bottom: 14px;
+}
+
+.sobre-etiqueta::before {
+    content: "";
+    display: inline-block;
+    width: 38px;
+    height: 3px;
+    background: #ffb30f;
+    vertical-align: middle;
+    margin-right: 14px;
+}
+
+.sobre-conteudo h1 {
+    font-size: clamp(48px, 6vw, 76px);
+    color: #103820;
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.sobre-conteudo h1 span {
+    color: #ffb310;
+}
+
+.sobre-slogan {
+    font-size: 23px;
+    color: #65826b;
+    margin: 8px 0 35px;
+}
+
+.sobre-cartao {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    background: #fffdf3;
+    border: 1px solid #e5e3d5;
+    border-radius: 18px;
+    padding: 35px 45px;
+    box-shadow: 0 12px 35px rgba(25, 48, 24, 0.07);
+}
+
+.sobre-logo {
+    width: 245px;
+    flex-shrink: 0;
+    border-right: 2px solid #ffb310;
+    padding-right: 40px;
+}
+
+.sobre-logo img {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+}
+
+.sobre-descricao {
+    flex: 1;
+}
+
+.sobre-descricao h2 {
+    font-size: 27px;
+    color: #103820;
+    margin: 0 0 18px;
+}
+
+.sobre-descricao p {
+    color: #54717a;
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 15px;
+}
+
+/* =====================================
+   RODAPÉ VERDE COMPACTO
+===================================== */
+
+.rodape-lavcust {
+    background: linear-gradient(
+        120deg,
+        #062b17,
+        #0c3b23,
+        #062b17
+    );
+    color: #ffffff;
+    width: 100%;
+}
+
+.rodape-conteudo {
+    max-width: 1450px;
+    margin: auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
+    flex-wrap: wrap;
+}
+
+.rodape-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.rodape-titulo span {
+    font-size: 23px;
+}
+
+.rodape-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    text-decoration: none;
+    padding-right: 24px;
+    border-right: 1px solid rgba(255,255,255,.25);
+}
+
+.rodape-icone {
+    font-size: 25px;
+    color: #ffffff;
+}
+
+.rodape-item strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.rodape-item small {
+    display: block;
+    font-size: 12px;
+    color: #a6d9d5;
+    margin-top: 4px;
+}
+
+.rodape-item:hover strong {
+    color: #ffbf30;
+}
+
+.rodape-frase {
+    font-size: 13px;
+    font-style: italic;
+    color: #f3edc9;
+    white-space: nowrap;
+}
+
+.rodape-inferior {
+    border-top: 1px solid rgba(255,255,255,.18);
+    max-width: 100%;
+    padding: 17px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    font-size: 12px;
+    color: #e1e9df;
+}
+
+.rodape-legal {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.separador {
+    color: #789b82;
+}
+
+/* =====================================
+   CELULAR E TABLET
+===================================== */
+
+@media (max-width: 900px) {
+    .sobre-lavcust {
+        min-height: auto;
+        padding: 60px 20px 90px;
+    }
+
+    .sobre-cartao {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 22px;
+        gap: 25px;
+    }
+
+    .sobre-logo {
+        border-right: none;
+        border-bottom: 2px solid #ffb310;
+        padding: 0 0 20px;
+        width: 200px;
+    }
+
+    .rodape-conteudo {
+        gap: 20px;
+        padding: 25px;
+    }
+
+    .rodape-item {
+        border-right: none;
+    }
+
+    .rodape-inferior {
+        flex-direction: column;
+        text-align: center;
+        padding: 18px;
+    }
+}
+/* ==========================================
+   LAVCUST - CORREÇÃO DA PÁGINA SOBRE
+   E DO RODAPÉ
+========================================== */
+
+/* Faz o rodapé ficar no final da tela */
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #FFFFEA;
+}
+
+body > main {
+    flex: 1 0 auto;
+}
+
+/* Área principal da página Sobre */
+.sobre-lavcust {
+    min-height: 0;
+    padding: 75px 30px 100px;
+    background: #fbfaeb;
+}
+
+/* Centralização do conteúdo */
+.sobre-conteudo {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+/* Cartão com logo e descrição */
+.sobre-cartao {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 35px 45px;
+    background: #fffdf3;
+    border: 1px solid #e5e3d5;
+    border-radius: 18px;
+    box-shadow: 0 12px 35px rgba(25, 48, 24, 0.07);
+}
+
+/* Rodapé verde */
+.rodape-lavcust {
+    flex-shrink: 0;
+    width: 100%;
+    margin-top: 0;
+    background: linear-gradient(
+        120deg,
+        #062b17,
+        #0c3b23,
+        #062b17
+    );
+    color: #ffffff;
+}
+
+/* Informações próximas e organizadas */
+.rodape-conteudo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 22px 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.rodape-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+}
+
+.rodape-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    color: #ffffff;
+}
+
+.rodape-item strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rodape-item small {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+    color: #b9d5c5;
+}
+
+.rodape-icone {
+    font-size: 21px;
+    color: #ffffff;
+}
+
+.rodape-frase {
+    font-size: 12px;
+    font-style: italic;
+    color: #f3edc9;
+}
+
+/* Faixa inferior */
+.rodape-inferior {
+    padding: 15px 5%;
+    border-top: 1px solid rgba(255,255,255,0.15);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    font-size: 11px;
+    color: #e1e9df;
+}
+
+.rodape-legal {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Celular */
+@media (max-width: 900px) {
+    .sobre-lavcust {
+        padding: 55px 20px 75px;
+    }
+
+    .sobre-cartao {
+        flex-direction: column;
+        padding: 30px 22px;
+        gap: 25px;
+    }
+
+    .rodape-conteudo {
+        gap: 18px;
+        padding: 25px 20px;
+    }
+
+    .rodape-item {
+        border-right: none;
+        padding-right: 0;
+    }
+
+    .rodape-inferior {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+/* FUNDO COM FOLHAS - PÁGINA SOBRE */
+
+.sobre-lavcust {
+    background-color: #fbfaeb;
+
+    background-image: url("/static/fundo_folhas.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    min-height: 650px;
+    padding: 75px 30px 100px;
+}
+/* CABEÇALHO VERDE-ESCURO */
+
+.topbar {
+    background: linear-gradient(
+        90deg,
+        #062b17,
+        #103d23,
+        #062b17
+    );
+
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.topbar .brand,
+.topbar .nav > a:not(.btn),
+.topbar .user-name {
+    color: #ffffff;
+}
+
+.topbar .brand > span > span {
+    color: #ffb310;
+}
+
+.topbar .nav > a:not(.btn):hover {
+    color: #ffb310;
+}
+
