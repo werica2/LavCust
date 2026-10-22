@@ -2445,9 +2445,299 @@ body > footer {
     color: #ffffff !important;
 }
 
+/* PADRONIZAÇÃO DA PÁGINA DE CÁLCULOS */
 
+body:has(.pagina-calculos) .pagina-calculos {
+    width: min(100% - 32px, 1050px);
+    max-width: 1050px;
+    margin: 40px auto 60px;
+}
 
+/* Evita que as seções ultrapassem o conteúdo */
+.pagina-calculos > * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
 
+/* Mantém os cartões proporcionais */
+.pagina-calculos .cards-calculos {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .pagina-calculos .cards-calculos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 550px) {
+    .pagina-calculos .cards-calculos {
+        grid-template-columns: 1fr;
+    }
+}
+/* =====================================
+   PÁGINA CÁLCULOS - PADRÃO LAVCUST
+===================================== */
+
+.calculos-page {
+    width: calc(100% - 40px);
+    max-width: 1050px;
+    margin: 40px auto 60px;
+    box-sizing: border-box;
+}
+
+/* Espaçamento entre as seções */
+.calculos-page > .panel,
+.calculos-page > .quick-grid {
+    margin-top: 20px;
+}
+
+/* Cartões de resultados */
+.calculos-page .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+/* Impede que os cartões ultrapassem a largura */
+.calculos-page .quick-card,
+.calculos-page .panel {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Filtros organizados */
+.calculos-page .filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.calculos-page .filters label {
+    min-width: 0;
+}
+
+.calculos-page .filters select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .calculos-page .quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .calculos-page {
+        width: calc(100% - 24px);
+    }
+
+    .calculos-page .quick-grid,
+    .calculos-page .filters {
+        grid-template-columns: 1fr;
+    }
+}
+/* CÁLCULOS - LARGURA IGUAL ÀS OUTRAS ABAS */
+
+.calculos-page {
+    width: calc(100% - 40px);
+    max-width: 1050px;
+    margin: 40px auto 60px;
+}
+
+.calculos-page .panel,
+.calculos-page .quick-grid {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.calculos-page .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.calculos-page .quick-card {
+    min-width: 0;
+    padding: 16px;
+}
+
+.calculos-page .filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr 150px;
+    gap: 12px;
+    align-items: end;
+}
+
+@media (max-width: 800px) {
+    .calculos-page .quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .calculos-page .filters {
+        grid-template-columns: 1fr;
+    }
+}/* ==========================================
+   LAVCUST - CORREÇÃO DA PÁGINA CÁLCULOS
+   ========================================== */
+
+/* Centralizar a página e diminuir a largura */
+.calculos-page {
+    width: calc(100% - 40px) !important;
+    max-width: 1050px !important;
+    margin: 35px auto 60px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Diminuir os painéis */
+.calculos-page .panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* Organizar os quatro cartões */
+.calculos-page .quick-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 20px !important;
+}
+
+/* Diminuir os cartões */
+.calculos-page .quick-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+}
+
+/* Organizar os filtros */
+.calculos-page .filters {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 150px !important;
+    gap: 12px !important;
+    align-items: end !important;
+}
+
+.calculos-page .filters label,
+.calculos-page .filters select {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+/* Ajustar a tabela */
+.calculos-page .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Responsividade */
+@media (max-width: 800px) {
+    .calculos-page .quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .calculos-page .filters {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .calculos-page .quick-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+/* =========================================
+   LAVCUST - PADRONIZAÇÃO DOS TÍTULOS
+   DESPESAS, VENDAS, CÁLCULOS E RELATÓRIOS
+   ========================================= */
+
+/* Títulos principais das páginas */
+.calculos-page h1,
+.despesas-page h1,
+.vendas-page h1,
+.relatorios-page h1 {
+    font-size: 36px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    margin: 15px 0 18px !important;
+    color: #1A4314 !important;
+}
+
+/* Subtítulos abaixo dos títulos */
+.calculos-page > div:first-child .muted,
+.despesas-page > div:first-child .muted,
+.vendas-page > div:first-child .muted,
+.relatorios-page > div:first-child .muted {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+}
+
+/* Ajuste para celulares */
+@media (max-width: 600px) {
+    .calculos-page h1,
+    .despesas-page h1,
+    .vendas-page h1,
+    .relatorios-page h1 {
+        font-size: 28px !important;
+    }
+}/* =========================================
+   PADRONIZAR TÍTULOS PRINCIPAIS DO LAVCUST
+   ========================================= */
+
+/* Títulos das páginas */
+main h1 {
+    font-size: 44px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    color: #1A4314 !important;
+    margin: 10px 0 12px !important;
+}
+
+/* Manter o mesmo tamanho no celular */
+@media (max-width: 600px) {
+    main h1 {
+        font-size: 32px !important;
+    }
+}
+/* AUMENTAR SOMENTE O TÍTULO CÁLCULOS */
+
+.calculos-page h1 {
+    font-size: 44px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    color: #1A4314 !important;
+    margin: 10px 0 12px !important;
+}
+
+@media (max-width: 600px) {
+    .calculos-page h1 {
+        font-size: 32px !important;
+    }
+}/* FUNDO DOS PAINÉIS DA ABA CÁLCULOS */
+
+.calculos-page .panel,
+.calculos-page .quick-card {
+    background-color: #FFF4D6 !important;
+    border: 1px solid #E5D8B8 !important;
+    border-radius: 16px !important;
+}
+
+/* Fundo da área de economia */
+.calculos-page .calculo-destaque {
+    background-color: #FFF4D6 !important;
+}
 
 
 

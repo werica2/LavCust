@@ -36,12 +36,24 @@
 {% block scripts %}
 
 <script>
+    // Dados enviados pelo Flask
     const labels = {{ cats | map(attribute='category') | list | tojson }};
     const values = {{ cats | map(attribute='total') | list | tojson }};
 
     const totalVendas = {{ totals['sales'] | tojson }};
     const totalDespesas = {{ totals['expenses'] | tojson }};
 
+    // Cores oficiais escolhidas para o LavCust
+    const coresLavCust = [
+        '#1A4314', // Verde
+        '#001586', // Azul
+        '#FFA500', // Amarelo
+        '#5D3519', // Marrom
+        '#A82223', // Vermelho
+        '#5A189A'  // Roxo
+    ];
+
+    // GRÁFICO 1 - DESPESAS POR CATEGORIA
     const categoryCanvas = document.getElementById('categoryChart');
 
     if (categoryCanvas) {
@@ -51,14 +63,17 @@
             data: {
                 labels: labels,
                 datasets: [{
-                    data: values
+                    data: values,
+                    backgroundColor: coresLavCust,
+                    borderColor: '#FFF4D6',
+                    borderWidth: 2,
+                    hoverOffset: 8
                 }]
             },
 
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-
                 plugins: {
                     legend: {
                         position: 'bottom'
@@ -68,7 +83,7 @@
         });
     }
 
-
+    // GRÁFICO 2 - VENDAS X DESPESAS
     const resultCanvas = document.getElementById('resultChart');
 
     if (resultCanvas) {
@@ -83,7 +98,13 @@
                     data: [
                         totalVendas,
                         totalDespesas
-                    ]
+                    ],
+                    backgroundColor: [
+                        '#1A4314', // Vendas - Verde
+                        '#A82223'  // Despesas - Vermelho
+                    ],
+                    borderRadius: 6,
+                    maxBarThickness: 110
                 }]
             },
 
