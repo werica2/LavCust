@@ -1,48 +1,53 @@
-@startuml Modelo_DER
+@startuml
+title LavCust - Diagrama Entidade-Relacionamento (DER)
 
-' Configurações visuais do diagrama
 hide circle
 skinparam linetype ortho
+skinparam classAttributeIconSize 0
 
-' Definition das Entidades
-entity "USUARIO" as usuario{
-  * id_cliente : INT <<PK>>
+entity "USUARIOS (users)" as users {
+  * id : INTEGER <<PK>>
   --
-  * nome : VARCHAR(100)
-  * email : VARCHAR(100)
-  * senha : VARCHAR(95)
+  name : TEXT
+  email : TEXT <<UNIQUE>>
+  password_hash : TEXT
+  created_at : TEXT
 }
 
-entity "SAFRA" as safra {
-  * id_pedido : INT <<PK>>
+entity "DESPESAS (expenses)" as expenses {
+  * id : INTEGER <<PK>>
   --
-  * id_usuario : INT <<FK>>
-  * nome : VARCHAR(100)
-  * ano : INT
- 
+  user_id : INTEGER <<FK>>
+  culture : TEXT
+  harvest : TEXT
+  category : TEXT
+  description : TEXT
+  amount : REAL
+  planned_amount : REAL
+  expense_date : TEXT
+  created_at : TEXT
 }
 
-entity "CATEGORIA_DESPESA" as categoria{
-  * id_item : INT <<PK>>
+entity "VENDAS (sales)" as sales {
+  * id : INTEGER <<PK>>
   --
-  * nome : VARCHAR(100)
-  * descricao : VARCHAR(255)
+  user_id : INTEGER <<FK>>
+  culture : TEXT
+  harvest : TEXT
+  quantity : REAL
+  price_per_bag : REAL
+  total : REAL
+  sale_date : TEXT
+  created_at : TEXT
 }
 
-entity "DESPESA" as despesa{
-  * id_despesa : INT <<PK>>
-  --
-  * id_safra : INT <<FK>>
-  * id_categoria : INT <<FK>>
-  * descricao : VARCHAR(255)
-  * valor : DECIMAL(10,2)
-  * data_despesa : DATE
-  
-}
+users ||--o{ expenses : registra
+users ||--o{ sales : realiza
 
-' Relacionamentos e Cardinalidades (Crow's Foot)
-usuario ||--o{ safra: "possui"
-safra ||--|{ despesa: "registra"
-categoria ||--o{ despesa : "classifica"
+note right of sales
+  quantity = quantidade de sacas
+  price_per_bag = preco por saca
+  total = valor total da venda
+end note
 
 @enduml
