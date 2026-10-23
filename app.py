@@ -3,13 +3,23 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import sqlite3
 from pathlib import Path
+import os
 from datetime import datetime
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "lavcust.db"
+DB_PATH = BASE_DIR / os.environ.get("LAVCUST_DB_NAME", "lavcust.db")
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "lavcust-secret-key-change-in-production"
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    for linha in env_file.read_text(encoding="utf-8").splitlines():
+        if linha.startswith("LAVCUST_SECRET_KEY="):
+            os.environ.setdefault("LAVCUST_SECRET_KEY", linha.split("=", 1)[1])
+
+app.config["SECRET_KEY"] = os.environ.get("LAVCUST_SECRET_KEY") or os.urandom(32)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 CATEGORIES = [
     "Sementes", "Fertilizantes", "Defensivos",
@@ -532,4 +542,4 @@ def not_found(_):
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    app.run(debug=False)

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}LavCust{% endblock %} | Lavoura que gera futuro</title>
   <meta name="description" content="LavCust — gestão de custos para produtores de soja e milho.">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20261023') }}">
   <link rel="icon" href="{{ url_for('static', filename='logo_lavcust.png') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -26,6 +26,7 @@
     <a href="{{ url_for('calculos') }}">Cálculos</a>
     <a href="{{ url_for('relatorios') }}">Relatórios</a>
     <a href="{{ url_for('sobre') }}">Sobre</a>
+    <a class="sair-mobile" href="{{ url_for('logout') }}">Sair</a>
   </nav>
   <div class="user-area">
     <span class="user-name">Olá, {{ current_user['name'].split()[0] }}</span>

@@ -2750,3 +2750,260 @@ main h1 {
 
 
 
+
+/* CORREÇÃO DO MENU MOBILE - LAVCUST */
+@media (max-width: 760px) {
+    .topbar .nav.open {
+        background: #fffbea !important;
+    }
+
+    .topbar .nav.open a,
+    .topbar .nav.open .user-name {
+        color: #073b26 !important;
+    }
+
+    .topbar .nav.open a:hover {
+        color: #b97800 !important;
+    }
+}
+
+/* BOTÃO SAIR NO MENU DO CELULAR */
+.sair-mobile {
+    display: none !important;
+}
+
+@media (max-width: 760px) {
+    .topbar .nav.open .sair-mobile {
+        display: block !important;
+        color: #a12b21 !important;
+        font-weight: 700;
+        border-top: 1px solid #ddd4b6;
+        padding-top: 15px;
+        margin-top: 8px;
+    }
+}
+
+/* AJUSTES VISUAIS LAVCUST - CELULAR */
+
+/* Título branco na página inicial */
+.hero-public .hero-copy h1 {
+    color: #ffffff !important;
+}
+
+.hero-public .hero-copy h1 span {
+    color: #ffb310 !important;
+}
+
+/* Cabeçalho público no celular */
+@media (max-width: 760px) {
+
+    .topbar .public-nav {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: auto !important;
+        padding: 0 !important;
+        margin-left: auto;
+        gap: 8px;
+        display: flex !important;
+        align-items: center;
+    }
+
+    /* Mostrar o botão Entrar */
+    .topbar .public-nav a:not(.btn) {
+        display: none !important;
+    }
+
+    .topbar .public-nav .btn-outline {
+        display: inline-flex !important;
+        background: transparent !important;
+        color: #ffffff !important;
+        border: 1px solid #ffffff !important;
+        padding: 9px 10px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    /* Botão Criar conta */
+    .topbar .public-nav .btn-gold {
+        display: inline-flex !important;
+        background: #ffad08 !important;
+        color: #092b18 !important;
+        border: none !important;
+        padding: 10px 12px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    .topbar .brand {
+        flex-shrink: 0;
+        font-size: 1rem !important;
+    }
+
+    .topbar .brand img {
+        width: 38px !important;
+        height: 38px !important;
+    }
+}
+
+/* CADASTRO RESPONSIVO - CELULAR */
+@media (max-width: 800px) {
+
+    .auth-page {
+        display: flex !important;
+        flex-direction: column !important;
+        width: calc(100% - 24px) !important;
+        max-width: 100% !important;
+        margin: 16px auto !important;
+        overflow: hidden;
+    }
+
+    .auth-visual {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 20px !important;
+        box-sizing: border-box;
+        background-size: contain !important;
+        background-position: center top !important;
+        overflow: hidden;
+    }
+
+    .auth-visual > img {
+        display: block;
+        width: min(180px, 65%) !important;
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: contain !important;
+        margin: 0 auto 20px !important;
+    }
+
+    .auth-visual h1 {
+        font-size: clamp(24px, 6vw, 34px) !important;
+        overflow-wrap: anywhere;
+    }
+
+    .auth-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+}
+
+/* AJUSTE FINAL - LAVCUST MOBILE */
+@media screen and (max-width: 760px) {
+
+    /* Título branco, mantendo destaques amarelos */
+    body .hero-public .hero-copy h1 {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    body .hero-public .hero-copy h1 span {
+        color: #ffb310 !important;
+        -webkit-text-fill-color: #ffb310 !important;
+    }
+
+    /* Retirar fundo claro do menu público */
+    body .topbar .nav.public-nav {
+        background: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        border: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+
+    /* Botão Entrar */
+    body .topbar .public-nav a.btn-outline {
+        background: transparent !important;
+        background-color: transparent !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        border: 1px solid #ffffff !important;
+        padding: 8px !important;
+        font-size: 12px !important;
+    }
+
+    /* Botão Criar conta */
+    body .topbar .public-nav a.btn-gold {
+        background: #ffad08 !important;
+        color: #092b18 !important;
+        -webkit-text-fill-color: #092b18 !important;
+        border: 0 !important;
+        padding: 9px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* CORREÇÃO DA IMAGEM NA PÁGINA DE LOGIN */
+@media (max-width: 800px) {
+
+    .auth-page .auth-visual {
+        width: 100% !important;
+        min-height: 280px !important;
+        padding: 20px !important;
+        box-sizing: border-box;
+    }
+
+    .auth-page .auth-visual > img {
+        display: block !important;
+        width: 100% !important;
+        max-width: 420px !important;
+        height: auto !important;
+        object-fit: contain !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* IMAGEM COMPLETA DO LOGIN NO CELULAR */
+@media screen and (max-width: 800px) {
+
+    .auth-page .auth-visual {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .auth-page .auth-visual > img {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        transform: none !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* CORREÇÃO DA IMAGEM COMPLETA - LOGIN E CADASTRO */
+@media (max-width: 800px) {
+
+    .auth-page .auth-visual {
+        background-image: url("/static/fundo_agro.png") !important;
+        background-size: contain !important;
+        background-position: center top !important;
+        background-repeat: no-repeat !important;
+
+        width: 100% !important;
+        aspect-ratio: 588 / 722;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Esconde a logo que estava ampliada */
+    .auth-page .auth-visual > img {
+        display: none !important;
+    }
+}
