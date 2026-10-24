@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "lavcust_publico.db"
+DB_PATH = BASE_DIR / os.environ.get("LAVCUST_DB_NAME", "lavcust_publico.db")
 
 app = Flask(__name__)
 env_file = BASE_DIR / ".env"
