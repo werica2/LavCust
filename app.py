@@ -340,14 +340,14 @@ def nova_despesa():
     return render_template("nova_despesa.html", today=datetime.now().strftime("%Y-%m-%d"))
 
 
-@app.route("/despesas/<int:expense_id>/editar", methods=["GET", "POST"])
+@app.route("/despesas/<int:expense_id>/editar", methods=["GET", "POST", "PUT"])
 @login_required
 def editar_despesa(expense_id):
     conn = get_db()
     row = conn.execute("SELECT * FROM expenses WHERE id=? AND user_id=?", (expense_id, session["user_id"])).fetchone()
     if not row:
         conn.close(); flash("Despesa não encontrada.", "danger"); return redirect(url_for("despesas"))
-    if request.method == "POST":
+    if request.method in ("POST", "PUT"):
         data = request.form
         try:
             amount = float(data.get("amount","0").replace(",", "."))
@@ -367,7 +367,7 @@ def editar_despesa(expense_id):
     return render_template("editar.html", expense=row)
 
 
-@app.post("/despesas/<int:expense_id>/excluir")
+@app.route("/despesas/<int:expense_id>/excluir", methods=["POST", "DELETE"])
 @login_required
 def excluir_despesa(expense_id):
     conn = get_db()
