@@ -72,6 +72,17 @@ def init_db():
         created_at TEXT NOT NULL,
         FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS production_estimates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        culture TEXT NOT NULL CHECK(culture IN ('Soja', 'Milho')),
+        harvest TEXT NOT NULL,
+        expected_bags REAL NOT NULL CHECK(expected_bags > 0),
+        expected_price REAL NOT NULL CHECK(expected_price >= 0),
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
     """)
     conn.commit()
     conn.close()
