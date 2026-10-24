@@ -212,12 +212,60 @@ def dashboard():
         FROM sales WHERE user_id=?
         ORDER BY date DESC LIMIT 6
     """, (uid, uid)).fetchall()
+
+
+
+
+    estimated = conn.execute("""
+        SELECT COALESCE(SUM(expected_bags * expected_price), 0)
+        FROM production_estimates
+        WHERE user_id=?
+    """, (uid,)).fetchone()[0]
     conn.close()
     expenses = float(totals["expenses"])
     sales = float(totals["sales"])
     result = sales - expenses
-    return render_template("dashboard.html", totals=totals, result=result, recent=recent)
+    return render_template(
+        "dashboard.html",
+        totals=totals,
+        result=result,
+        recent=recent,
+        estimated=estimated
+    )
 
+
+
+@app.route("/estimativas/nova", methods=["GET", "POST"])
+@login_required
+def nova_estimativa():
+    if request.method == "POST":
+        culture = request.form.get("culture", "")
+        harvest = request.form.get("harvest", "").strip()
+
+        try:
+            bags = float(request.form.get("expected_bags", "").replace(",", "."))
+            price = float(request.form.get("expected_price", "").replace(",", "."))
+        except ValueError:
+            flash("Informe valores numéricos válidos.", "danger")
+            return redirect(url_for("nova_estimativa"))
+
+        if culture not in CULTURES or not harvest or bags <= 0 or price < 0:
+            flash("Preencha corretamente os campos.", "danger")
+            return redirect(url_for("nova_estimativa"))
+
+        conn = get_db()
+        conn.execute("""
+            INSERT INTO production_estimates
+            (user_id, culture, harvest, expected_bags, expected_price)
+            VALUES (?, ?, ?, ?, ?)
+        """, (session["user_id"], culture, harvest, bags, price))
+        conn.commit()
+        conn.close()
+
+        flash("Receita estimada cadastrada com sucesso!", "success")
+        return redirect(url_for("dashboard"))
+
+    return render_template("nova_estimativa.html")
 
 @app.route("/despesas", methods=["GET"])
 @login_required

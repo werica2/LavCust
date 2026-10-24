@@ -7,18 +7,24 @@
     <a class="btn btn-gold" href="{{ url_for('nova_despesa') }}">+ Cadastrar despesa</a>
   </section>
 
-  <section class="stat-grid">
+  <section class="stat-grid lavcust-indicadores">
     <article class="stat-card"><span>Total de despesas</span><strong>{{ "R$ {:,.2f}".format(totals['expenses']).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>Custos registrados</small></article>
     <article class="stat-card"><span>Total de vendas</span><strong>{{ "R$ {:,.2f}".format(totals['sales']).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>Receitas registradas</small></article>
     <article class="stat-card"><span>Resultado</span><strong class="{{ 'positive' if result >= 0 else 'negative' }}">{{ "R$ {:,.2f}".format(result|abs).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>{{ "Lucro" if result >= 0 else "Prejuízo" }}</small></article>
     <article class="stat-card"><span>Possível economia</span><strong>{{ "R$ {:,.2f}".format(totals['savings']).replace(",", "X").replace(".", ",").replace("X",".") }}</strong><small>Com base no valor previsto informado</small></article>
   </section>
 
-  <section class="quick-grid">
+  <section class="quick-grid lavcust-atalhos" style="grid-template-columns: repeat(5, minmax(0, 1fr));">
     <a href="{{ url_for('nova_despesa') }}" class="quick-card"><b>💰</b><span>Cadastrar despesa</span><small>Registre os custos da lavoura</small></a>
     <a href="{{ url_for('despesas') }}" class="quick-card"><b>📋</b><span>Ver despesas</span><small>Pesquise e organize registros</small></a>
     <a href="{{ url_for('nova_venda') }}" class="quick-card"><b>🌽</b><span>Registrar venda</span><small>Informe sacas e preço</small></a>
     <a href="{{ url_for('relatorios') }}" class="quick-card"><b>📊</b><span>Relatórios</span><small>Veja gráficos e resultados</small></a>
+
+    <a href="{{ url_for('nova_estimativa') }}" class="quick-card">
+      <b>🌾</b>
+      <span>Receita estimada</span>
+      <small>Planeje a produção e o valor esperado</small>
+    </a>
   </section>
 
   <section class="panel">
